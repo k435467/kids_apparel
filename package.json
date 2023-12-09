@@ -7,7 +7,7 @@
     "db-push": "dotenv -e .env.local -- npx prisma db push",
     "db-generate": "npx prisma generate",
     "dev": "next dev",
-    "build": "next build",
+    "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "next lint"
   },
