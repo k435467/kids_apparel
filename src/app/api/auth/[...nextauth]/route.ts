@@ -1,5 +1,6 @@
 import NextAuth, { type AuthOptions } from 'next-auth'
 import GithubProvider, { type GithubProfile } from 'next-auth/providers/github'
+import GoogleProvider from 'next-auth/providers/google'
 
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { PrismaClient } from '@prisma/client'
@@ -9,6 +10,10 @@ const prisma = new PrismaClient()
 const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     GithubProvider({
       clientId: process.env.GITHUB_ID!,
       clientSecret: process.env.GITHUB_SECRET!,
@@ -23,7 +28,7 @@ const authOptions: AuthOptions = {
       },
     }),
   ],
-  // debug: true, // TODO - disable debug on production
+  debug: true, // TODO - disable debug on production
   session: {
     strategy: 'jwt',
   },
