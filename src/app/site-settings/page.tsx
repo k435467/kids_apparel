@@ -2,6 +2,7 @@
 
 import React, { useRef } from 'react'
 import { uploadFilesToBlob } from '@/utils/image'
+import ProductTable from '@/components/product/ProductTable'
 
 const SiteSettings: React.FC<{}> = () => {
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -16,6 +17,9 @@ const SiteSettings: React.FC<{}> = () => {
   return (
     <div>
       <div>This is SiteSettings</div>
+      <div>
+        <ProductTable />
+      </div>
       <div>
         <input ref={fileInputRef} type="file" id="file-input" multiple />
         <button onClick={handleUploadFiles}>Upload Files</button>
