@@ -4,6 +4,7 @@ import './globals.css'
 import { getServerSession } from 'next-auth'
 import SessionProvider from '@/components/SessionProvider'
 import NavMenu from '@/components/NavMenu'
+import StyledComponentsRegistry from '@/components/StyledComponentsRegistry'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,7 +21,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className={inter.className}>
         <SessionProvider session={session}>
           <NavMenu />
-          {children}
+          <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
         </SessionProvider>
       </body>
     </html>

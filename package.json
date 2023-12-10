@@ -15,6 +15,7 @@
     "schema": "src/prisma/schema.prisma"
   },
   "dependencies": {
+    "@ant-design/cssinjs": "1.18.1",
     "@auth/prisma-adapter": "^1.0.9",
     "@azure/storage-blob": "^12.17.0",
     "@prisma/client": "^5.7.0",
