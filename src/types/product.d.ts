@@ -1,5 +1,5 @@
 interface IProduct {
-  id: string
+  id?: string
   name: string // 名稱
   isOnShelf: boolean // 上架
   imageUrls: string[] // 圖片
@@ -9,5 +9,5 @@ interface IProduct {
   variants: string[] // 樣式
   sizes: string[] // 尺寸
   pricesOfVariants: number[][] // 每個尺寸在不同樣式下的標價
-  createdAt: string
+  createdAt?: string
 }
