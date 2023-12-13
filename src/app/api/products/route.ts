@@ -1,4 +1,6 @@
 import clientPromise from '@/utils/mongodb'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 
 export async function GET() {
   try {
@@ -15,6 +17,11 @@ export async function GET() {
 }
 
 export async function POST() {
+  const session = await getServerSession(authOptions)
+  if (!session || session.user?.role != 'admin') {
+    return Response.json({ message: 'Please check the role of the user.' }, { status: 403 })
+  }
+
   try {
     const client = await clientPromise
     const db = client.db('kids-apparel')
@@ -24,7 +31,7 @@ export async function POST() {
         categoryId: '0',
         pricesOfVariants: [[100]],
         description: 'description',
-        name: 'product name1',
+        name: 'product name3',
         descriptionList: ['description1', 'description2'],
         imageUrls: ['imageUrls'],
         isOnShelf: true,
@@ -35,7 +42,7 @@ export async function POST() {
         categoryId: '0',
         pricesOfVariants: [[100]],
         description: 'description',
-        name: 'product name2',
+        name: 'product name4',
         descriptionList: ['description1', 'description2'],
         imageUrls: ['imageUrls'],
         isOnShelf: true,
@@ -48,7 +55,6 @@ export async function POST() {
 
     return Response.json(insertResult)
   } catch (err) {
-    console.error(err)
-    return Response.error()
+    return Response.json(err, { status: 500 })
   }
 }
