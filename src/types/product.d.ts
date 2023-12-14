@@ -8,6 +8,13 @@ interface IProduct {
   descriptionList: string[] // 描述清單
   variants: string[] // 樣式
   sizes: string[] // 尺寸
-  pricesOfVariants: number[][] // 每個尺寸在不同樣式下的標價
-  createdAt?: string
+  salePricesOfVariants: number[][] // 每個尺寸在不同樣式下的標價
+  regularPricesOfVariants: number[][] // 每個尺寸在不同樣式下的原價
+  createTime?: string
+}
+
+interface ICategory {
+  id?: string
+  name: string
+  createTime?: string
 }

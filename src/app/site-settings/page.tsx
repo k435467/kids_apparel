@@ -1,29 +1,37 @@
 'use client'
+import React from 'react'
+import { Button, Checkbox, Form, Input } from 'antd'
 
-import React, { useRef } from 'react'
-import { uploadFilesToBlob } from '@/utils/image'
-import ProductTable from '@/components/product/ProductTable'
+type FieldType = {
+  name?: string
+}
 
 const SiteSettings: React.FC<{}> = () => {
-  const fileInputRef = useRef<HTMLInputElement>(null)
-
-  const handleUploadFiles = () => {
-    if (!fileInputRef.current?.files) return
-    uploadFilesToBlob(fileInputRef.current.files).then((fileNames) => {
-      console.log(fileNames)
-    })
-  }
-
   return (
-    <div>
-      <div>This is SiteSettings</div>
-      <div>
-        <ProductTable />
-      </div>
-      <div>
-        <input ref={fileInputRef} type="file" id="file-input" multiple />
-        <button onClick={handleUploadFiles}>Upload Files</button>
-      </div>
+    <div className="container mx-auto">
+      <h1>Categories</h1>
+      <Form
+        name="create-category"
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
+        onFinish={() => {}}
+        onFinishFailed={() => {}}
+        autoComplete="off"
+        style={{ maxWidth: 600 }}
+      >
+        <Form.Item<FieldType>
+          label="Name"
+          name="name"
+          rules={[{ required: true, message: 'Please input the name!' }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   )
 }
