@@ -4,6 +4,7 @@ import { Button, Checkbox, Form, Input, message, Spin } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
 import { getFileNames, uploadFilesToBlob } from '@/utils/image'
 import UploadListItem from '@/components/product/UploadListItem'
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
 
 type FieldType = {
   name?: string
@@ -18,7 +19,11 @@ const testFileNames = [
 const SiteSettings: React.FC<{}> = () => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [filesUploading, setFilesUploading] = useState<string[]>([])
-  const [filesUploaded, setFilesUploaded] = useState<string[]>([])
+  const [filesUploaded, setFilesUploaded] = useState<string[]>([
+    'Screenshot%202023-12-02%20at%2013.35.56.png',
+    'Screenshot%202023-12-02%20at%2014.35.56.png',
+    'Screenshot%202023-12-02%20at%2015.35.56.png',
+  ])
 
   const [messageApi, contextHolder] = message.useMessage()
 
@@ -44,6 +49,16 @@ const SiteSettings: React.FC<{}> = () => {
       })
   }
 
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination) return
+
+    const items = [...filesUploaded]
+    const [reorderedItem] = items.splice(result.source.index, 1)
+    items.splice(result.destination.index, 0, reorderedItem)
+
+    setFilesUploaded(items)
+  }
+
   return (
     <div className="container mx-auto p-2">
       {contextHolder}
@@ -60,15 +75,40 @@ const SiteSettings: React.FC<{}> = () => {
         <Button icon={<UploadOutlined />} onClick={() => fileInputRef.current?.click()}>
           上傳商品圖片
         </Button>
+
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId="files-uploaded">
+            {(provided) => (
+              <div {...provided.droppableProps} ref={provided.innerRef}>
+                {filesUploaded.map((fileName, index) => (
+                  <Draggable key={fileName} draggableId={fileName} index={index}>
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <UploadListItem fileName={fileName} onDelete={() => {}} type="done" />
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+
+        {/*----*/}
+        {/*<div>*/}
+        {/*  {filesUploading.map((fileName) => {*/}
+        {/*    return (*/}
+        {/*      <UploadListItem fileName={fileName} type="done" key={fileName} onDelete={() => {}} />*/}
+        {/*    )*/}
+        {/*  })}*/}
+        {/*</div>*/}
         <div>
-          {testFileNames.map((fileName) => {
-            return (
-              <UploadListItem fileName={fileName} type="done" key={fileName} onDelete={() => {}} />
-            )
-          })}
-        </div>
-        <div>
-          {testFileNames.map((fileName) => {
+          {filesUploading.map((fileName) => {
             return (
               <UploadListItem
                 fileName={fileName}

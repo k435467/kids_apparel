@@ -26,11 +26,13 @@
     "next-auth": "^4.24.5",
     "prisma": "^5.7.0",
     "react": "^18",
+    "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
+    "@types/react-beautiful-dnd": "^13.1.7",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
     "postcss": "^8",
