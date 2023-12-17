@@ -1,20 +1,20 @@
 'use client'
 import React, { useRef, useState } from 'react'
-import { Button, Checkbox, Form, Input, message, Spin } from 'antd'
+import { Button, Checkbox, Form, Input, message } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
 import { getFileNames, uploadFilesToBlob } from '@/utils/image'
 import UploadListItem from '@/components/product/UploadListItem'
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
+import { DragDropContext, Draggable, DropResult } from 'react-beautiful-dnd'
+import dynamic from 'next/dynamic'
+
+// Ref: https://github.com/atlassian/react-beautiful-dnd/issues/2444#issuecomment-1457541204
+const Droppable = dynamic(() => import('react-beautiful-dnd').then((res) => res.Droppable), {
+  ssr: false,
+})
 
 type FieldType = {
   name?: string
 }
-
-const testFileNames = [
-  'Screenshot%202023-12-02%20at%2013.35.56.png',
-  'Screenshot%202023-12-02%20at%2014.35.56.png',
-  'Screenshot%202023-12-02%20at%2015.35.56.png',
-]
 
 const SiteSettings: React.FC<{}> = () => {
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -58,6 +58,14 @@ const SiteSettings: React.FC<{}> = () => {
 
     setFilesUploaded(items)
   }
+
+  // const [isBrowser, setIsBrowser] = useState(false)
+  //
+  // useEffect(() => {
+  //   if (typeof window !== 'undefined') {
+  //     setIsBrowser(true)
+  //   }
+  // }, [])
 
   return (
     <div className="container mx-auto p-2">
