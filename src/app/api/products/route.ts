@@ -1,6 +1,6 @@
 import clientPromise from '@/utils/mongodb'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { authOptions } from '@/utils/auth'
 import { NextRequest } from 'next/server'
 
 export async function GET() {
