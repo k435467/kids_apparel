@@ -1,10 +1,21 @@
 import { BlobServiceClient } from '@azure/storage-blob'
 
+export const blobImagePath: string =
+  'https://k435467storageaccount1.blob.core.windows.net/kids-apparel/'
+
+export const getFileNames = (files: FileList): string[] => {
+  const names: string[] = []
+  for (const file of files) {
+    names.push(file.name)
+  }
+  return names
+}
+
 /**
  * Upload files to Azure blob storage
  * @returns The promise of file names
  */
-export const uploadFilesToBlob: (files: FileList) => Promise<string[]> = async (files) => {
+export const uploadFilesToBlob = async (files: FileList): Promise<string[]> => {
   const fileNames: string[] = []
 
   if (!process.env['NEXT_PUBLIC_BLOB_SERVICE_SAS_URL']) return fileNames
