@@ -1,7 +1,7 @@
 'use client'
 import React, { useRef, useState } from 'react'
-import { Button, Checkbox, Form, Input, message } from 'antd'
-import { UploadOutlined } from '@ant-design/icons'
+import { Button, Form, Input, message, Select, Switch, Typography, InputNumber } from 'antd'
+import { DeleteOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons'
 import { getFileNames, uploadFilesToBlob } from '@/utils/image'
 import UploadListItem from '@/components/product/UploadListItem'
 import { DragDropContext, Draggable, DropResult } from 'react-beautiful-dnd'
@@ -19,11 +19,8 @@ type FieldType = {
 const SiteSettings: React.FC<{}> = () => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [filesUploading, setFilesUploading] = useState<string[]>([])
-  const [filesUploaded, setFilesUploaded] = useState<string[]>([
-    'Screenshot%202023-12-02%20at%2013.35.56.png',
-    'Screenshot%202023-12-02%20at%2014.35.56.png',
-    'Screenshot%202023-12-02%20at%2015.35.56.png',
-  ])
+  const [filesUploaded, setFilesUploaded] = useState<string[]>([])
+  const [form] = Form.useForm()
 
   const [messageApi, contextHolder] = message.useMessage()
 
@@ -58,14 +55,6 @@ const SiteSettings: React.FC<{}> = () => {
 
     setFilesUploaded(items)
   }
-
-  // const [isBrowser, setIsBrowser] = useState(false)
-  //
-  // useEffect(() => {
-  //   if (typeof window !== 'undefined') {
-  //     setIsBrowser(true)
-  //   }
-  // }, [])
 
   return (
     <div className="container mx-auto p-2">
@@ -106,15 +95,6 @@ const SiteSettings: React.FC<{}> = () => {
             )}
           </Droppable>
         </DragDropContext>
-
-        {/*----*/}
-        {/*<div>*/}
-        {/*  {filesUploading.map((fileName) => {*/}
-        {/*    return (*/}
-        {/*      <UploadListItem fileName={fileName} type="done" key={fileName} onDelete={() => {}} />*/}
-        {/*    )*/}
-        {/*  })}*/}
-        {/*</div>*/}
         <div>
           {filesUploading.map((fileName) => {
             return (
@@ -134,21 +114,119 @@ const SiteSettings: React.FC<{}> = () => {
         onFinish={() => {}}
         onFinishFailed={() => {}}
         autoComplete="off"
+        form={form}
       >
-        <Form.Item<FieldType>
+        <Form.Item
           label="商品名稱"
           name="name"
           rules={[{ required: true, message: 'Please input the name!' }]}
         >
           <Input />
         </Form.Item>
-        <Form.Item name="isOnShelf">
-          <Checkbox>上架</Checkbox>
+        <Form.Item name="categoryId" label="分類" rules={[{ required: true }]}>
+          <Select>
+            <Select.Option value="1">分類1</Select.Option>
+            <Select.Option value="2">分類2</Select.Option>
+            <Select.Option value="3">分類3</Select.Option>
+          </Select>
+        </Form.Item>
+        <Form.Item name="description" label="描述">
+          <Input.TextArea rows={4} />
+        </Form.Item>
+        <Form.Item label="描述清單">
+          <Form.List name="descriptionList">
+            {(fields, { add, remove }) => {
+              return (
+                <>
+                  {fields.map((field, index) => {
+                    return (
+                      <div key={field.key} className="flex">
+                        <Form.Item name={[field.name]} className="grow">
+                          <Input />
+                        </Form.Item>
+                        <Button
+                          onClick={() => remove(index)}
+                          icon={<DeleteOutlined />}
+                          type="text"
+                          size="small"
+                          className="ml-1 mt-1"
+                        />
+                      </div>
+                    )
+                  })}
+                  <Form.Item>
+                    <Button type="dashed" onClick={() => add('')} block icon={<PlusOutlined />}>
+                      增加
+                    </Button>
+                  </Form.Item>
+                </>
+              )
+            }}
+          </Form.List>
+        </Form.Item>
+        <Form.Item label="尺寸">
+          <Form.List name="sizes">
+            {(fields, { add, remove }) => {
+              return (
+                <>
+                  {fields.map((field, index) => {
+                    return (
+                      <div key={field.key} className="flex">
+                        <Form.Item name={[field.name, 'size']} className="grow">
+                          <Input placeholder="尺寸" />
+                        </Form.Item>
+                        <Form.Item name={[field.name, 'price']}>
+                          <InputNumber placeholder="售價" />
+                        </Form.Item>
+                        <Form.Item name={[field.name, 'stock']}>
+                          <InputNumber placeholder="庫存" />
+                        </Form.Item>
+                        <Button
+                          onClick={() => remove(index)}
+                          icon={<DeleteOutlined />}
+                          type="text"
+                          size="small"
+                          className="ml-1 mt-1"
+                        />
+                      </div>
+                    )
+                  })}
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() =>
+                        add({
+                          size: '',
+                          stock: null,
+                          price: null,
+                        })
+                      }
+                      block
+                      icon={<PlusOutlined />}
+                    >
+                      增加
+                    </Button>
+                  </Form.Item>
+                </>
+              )
+            }}
+          </Form.List>
+        </Form.Item>
+        <Form.Item name="isOnShelf" label="上架" valuePropName="checked" initialValue={true}>
+          <Switch />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
             Submit
           </Button>
+        </Form.Item>
+
+        <Form.Item noStyle shouldUpdate>
+          {() => (
+            <Typography>
+              <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>
+            </Typography>
+          )}
         </Form.Item>
       </Form>
     </div>

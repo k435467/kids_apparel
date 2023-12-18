@@ -13,7 +13,7 @@ const UploadListItem: React.FC<{
       key={fileName}
       className={`${
         type === 'done' ? 'border-solid' : 'border-dashed'
-      } mt-2 flex min-h-[66px] items-center rounded-lg border border-gray-300 p-2`}
+      } mt-2 flex min-h-[66px] select-none items-center rounded-lg border border-gray-300 p-2`}
     >
       {type === 'done' && <img className="h-12 w-12" src={blobImagePath + fileName} alt="" />}
       {type === 'uploading' && (
