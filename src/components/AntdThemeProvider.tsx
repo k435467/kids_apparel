@@ -13,7 +13,8 @@ const AntdThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#ffbf00',
+          // tailwind: amber-400
+          colorPrimary: 'rgb(251, 191, 36)',
         },
       }}
     >
