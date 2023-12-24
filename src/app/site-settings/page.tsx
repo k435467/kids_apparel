@@ -12,12 +12,7 @@ const SiteSettingsPage: React.FC<{}> = () => {
       </Link>
       <Link href={'/site-settings/categories'}>
         <Button size="large" block>
-          分類列表
-        </Button>
-      </Link>
-      <Link href={'/site-settings/categories/create'}>
-        <Button size="large" block>
-          分類新增
+          商品分類
         </Button>
       </Link>
       <Link href={'/site-settings/products'}>

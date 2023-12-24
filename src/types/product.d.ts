@@ -20,7 +20,9 @@ interface IProduct {
 }
 
 interface ICategory {
-  id?: string
-  name: string
-  createTime?: string
+  _id?: string
+  isOnShelf: boolean
+  title: string
+  order?: number
+  createTime?: Date
 }
