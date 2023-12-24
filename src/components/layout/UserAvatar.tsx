@@ -17,7 +17,10 @@ export default function () {
           )}
         </>
       ) : (
-        <LoginOutlined onClick={() => signIn()} />
+        <button className="flex items-center bg-transparent" onClick={() => signIn()}>
+          <LoginOutlined />
+          <div className="ml-2">登入</div>
+        </button>
       )}
     </>
   )
