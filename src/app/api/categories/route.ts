@@ -10,6 +10,7 @@ export async function GET() {
     const db = client.db('kids-apparel')
 
     const categories = await db.collection('categories').find({}).limit(10).toArray()
+    categories.sort((a, b) => a.order ?? 0 - b.order ?? 0)
 
     return Response.json(categories)
   } catch (err) {

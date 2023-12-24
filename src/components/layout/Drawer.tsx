@@ -1,5 +1,5 @@
 'use client'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { CloseOutlined, ControlOutlined, LogoutOutlined } from '@ant-design/icons'
 import Link from 'next/link'
@@ -11,7 +11,7 @@ const BottomSection: React.FC<{ closeDrawer: () => void }> = ({ closeDrawer }) =
   const { data: session } = useSession()
 
   return (
-    <div className="ml-2 text-white">
+    <div className="ml-2">
       {session?.user?.role === 'admin' && (
         <Link href="/site-settings" className="flex items-center bg-transparent p-2">
           <ControlOutlined />
@@ -45,7 +45,7 @@ const variants: Variants = {
   closed: { opacity: 0, x: '-100%' },
 }
 
-const Drawer: React.FC<{}> = () => {
+export default function () {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -57,6 +57,18 @@ const Drawer: React.FC<{}> = () => {
     params.delete('sideBar')
     return params.toString()
   }, [searchParams])
+
+  const [categories, setCategories] = useState<ICategory[]>([])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await fetch('api/categories')
+      const data = await res.json()
+      setCategories(data)
+    }
+
+    fetchCategories()
+  }, [])
 
   return (
     <AntdThemeProvider>
@@ -73,13 +85,21 @@ const Drawer: React.FC<{}> = () => {
       {/* Drawer */}
       <motion.div
         variants={variants}
-        className="absolute bottom-0 top-0 z-[1000] flex w-64 flex-col bg-black pl-8 opacity-0"
+        className="absolute bottom-0 top-0 z-[1000] flex w-64 flex-col bg-black pl-8 text-white opacity-0"
         animate={isOpen ? 'open' : 'closed'}
       >
-        <div className="m-4 grow text-white">
-          <Link href={{ pathname, query: queryStringWithoutSideBar }} replace={true}>
-            <CloseOutlined />
-          </Link>
+        <div className="grow">
+          <div className="m-4">
+            <Link href={{ pathname, query: queryStringWithoutSideBar }} replace={true}>
+              <CloseOutlined />
+            </Link>
+          </div>
+
+          {categories.map((category) => (
+            <div key={category._id} className="w-full px-4 py-2">
+              {category.title}
+            </div>
+          ))}
         </div>
 
         <div className="mb-4 shrink-0">
@@ -93,5 +113,3 @@ const Drawer: React.FC<{}> = () => {
     </AntdThemeProvider>
   )
 }
-
-export default Drawer
