@@ -1,5 +1,5 @@
 'use client'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Button, Form, Input, message, Select, Switch, Typography, InputNumber } from 'antd'
 import { DeleteOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons'
 import { getFileNames, uploadFilesToBlob } from '@/utils/image'
@@ -51,6 +51,22 @@ const ProductsCreatePage: React.FC<{}> = () => {
 
     setFilesUploaded(items)
   }
+
+  const [categories, setCategories] = useState<ICategory[]>([])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('/api/categories')
+        const data = await res.json()
+        setCategories(data)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    fetchCategories()
+  }, [])
 
   return (
     <div className="container mx-auto p-2">
@@ -107,7 +123,14 @@ const ProductsCreatePage: React.FC<{}> = () => {
       <Form
         name="create-category"
         layout="vertical"
-        onFinish={() => {}}
+        onFinish={(values) => {
+          fetch('/api/products', { method: 'POST', body: JSON.stringify([values]) })
+            .then((res) => messageApi.success('成功'))
+            .catch((err) => {
+              console.error(err)
+              messageApi.error('失敗')
+            })
+        }}
         onFinishFailed={() => {}}
         autoComplete="off"
         form={form}
@@ -121,9 +144,11 @@ const ProductsCreatePage: React.FC<{}> = () => {
         </Form.Item>
         <Form.Item name="categoryId" label="分類" rules={[{ required: true }]}>
           <Select>
-            <Select.Option value="1">分類1</Select.Option>
-            <Select.Option value="2">分類2</Select.Option>
-            <Select.Option value="3">分類3</Select.Option>
+            {categories.map((category) => (
+              <Select.Option key={category._id} value={category._id}>
+                {category.title}
+              </Select.Option>
+            ))}
           </Select>
         </Form.Item>
         <Form.Item name="description" label="描述">

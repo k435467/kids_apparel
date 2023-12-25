@@ -62,7 +62,7 @@ export default function () {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const res = await fetch('api/categories')
+      const res = await fetch('/api/categories')
       const data = await res.json()
       setCategories(data)
     }

@@ -2,6 +2,7 @@ import clientPromise from '@/utils/mongodb'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/utils/auth'
 import { NextRequest } from 'next/server'
+import { ObjectId } from 'mongodb'
 
 export async function GET() {
   try {
@@ -29,7 +30,15 @@ export async function POST(req: NextRequest) {
 
     const products = await req.json()
 
-    const insertResult = await db.collection('products').insertMany(products)
+    const productsWithCategoryObjectId = products.map((product: IProduct) => ({
+      ...product,
+      categoryId:
+        typeof product.categoryId === 'string'
+          ? new ObjectId(product.categoryId)
+          : product.categoryId,
+    }))
+
+    const insertResult = await db.collection('products').insertMany(productsWithCategoryObjectId)
 
     return Response.json(insertResult)
   } catch (err) {
