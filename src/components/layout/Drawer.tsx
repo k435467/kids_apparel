@@ -5,7 +5,7 @@ import { CloseOutlined, ControlOutlined, LogoutOutlined } from '@ant-design/icon
 import Link from 'next/link'
 import { motion, type Variants } from 'framer-motion'
 import AntdThemeProvider from '@/components/AntdThemeProvider'
-import { useSession, signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 
 const BottomSection: React.FC<{ closeDrawer: () => void }> = ({ closeDrawer }) => {
   const { data: session } = useSession()
@@ -93,6 +93,10 @@ export default function () {
             <Link href={{ pathname, query: queryStringWithoutSideBar }} replace={true}>
               <CloseOutlined />
             </Link>
+          </div>
+
+          <div key="go-to-home" className="w-full px-4 py-2">
+            <Link href="/">首頁</Link>
           </div>
 
           {categories.map((category) => (

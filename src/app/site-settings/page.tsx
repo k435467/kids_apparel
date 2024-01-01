@@ -20,11 +20,6 @@ const SiteSettingsPage: React.FC<{}> = () => {
           商品列表
         </Button>
       </Link>
-      <Link href={'/site-settings/products/create'}>
-        <Button size="large" block>
-          商品新增
-        </Button>
-      </Link>
     </div>
   )
 }
