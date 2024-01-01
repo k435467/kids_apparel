@@ -6,6 +6,7 @@ import { getFileNames, uploadFilesToBlob } from '@/utils/image'
 import UploadListItem from '@/components/product/UploadListItem'
 import { DragDropContext, Draggable, DropResult } from 'react-beautiful-dnd'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/navigation'
 
 // Ref: https://github.com/atlassian/react-beautiful-dnd/issues/2444#issuecomment-1457541204
 const Droppable = dynamic(() => import('react-beautiful-dnd').then((res) => res.Droppable), {
@@ -13,6 +14,8 @@ const Droppable = dynamic(() => import('react-beautiful-dnd').then((res) => res.
 })
 
 const ProductsCreatePage: React.FC<{}> = () => {
+  const router = useRouter()
+
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [filesUploading, setFilesUploading] = useState<string[]>([])
   const [filesUploaded, setFilesUploaded] = useState<string[]>([])
@@ -24,10 +27,8 @@ const ProductsCreatePage: React.FC<{}> = () => {
     const files = fileInputRef.current?.files
     if (!files || files.length === 0) return
 
-    // clear files preventing upload the files again next time
-    fileInputRef.current.value = ''
-
     const fileNames = getFileNames(files)
+    console.log(fileNames)
     setFilesUploading((v) => [...v, ...fileNames])
 
     uploadFilesToBlob(files)
@@ -39,6 +40,12 @@ const ProductsCreatePage: React.FC<{}> = () => {
       .catch((err) => {
         setFilesUploading((v) => v.filter((x) => !fileNames.includes(x)))
         messageApi.success(`上傳${fileNames.length}張圖片失敗`)
+      })
+      .finally(() => {
+        // clear files preventing upload the files again next time
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ''
+        }
       })
   }
 
@@ -124,8 +131,16 @@ const ProductsCreatePage: React.FC<{}> = () => {
         name="create-category"
         layout="vertical"
         onFinish={(values) => {
-          fetch('/api/products', { method: 'POST', body: JSON.stringify([values]) })
-            .then((res) => messageApi.success('成功'))
+          fetch('/api/products', {
+            method: 'POST',
+            body: JSON.stringify([{ ...values, imgNames: filesUploaded }]),
+          })
+            .then((res) => {
+              messageApi.success('成功')
+              setTimeout(() => {
+                router.push('/site-settings/products')
+              }, 2000)
+            })
             .catch((err) => {
               console.error(err)
               messageApi.error('失敗')

@@ -8,7 +8,7 @@ interface IProduct {
   id?: string
   name: string // 名稱
   isOnShelf: boolean // 上架
-  imageUrls?: string[] // 圖片
+  imgNames?: string[] // 圖片
   categoryId: string // 分類
   description: string // 描述
   descriptionList: string[] // 描述清單

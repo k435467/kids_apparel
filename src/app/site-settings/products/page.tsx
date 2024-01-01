@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Button, message } from 'antd'
 import { FileImageOutlined } from '@ant-design/icons'
 import Link from 'next/link'
+import { blobImagePath } from '@/utils/image'
 
 const ProductsPage: React.FC<{}> = () => {
   const [products, setProducts] = useState<IProduct[]>([])
@@ -34,14 +35,22 @@ const ProductsPage: React.FC<{}> = () => {
         </Link>
       </div>
       {products.map((product) => {
-        const coverImage = product.imageUrls?.[0]
+        const coverImageName = product.imgNames?.[0]
         return (
           <div
             key={product.id}
             className="mb-2 flex w-full items-center rounded-lg border border-solid border-gray-200 p-4"
           >
             <div className="mr-2 flex h-16 w-16 items-center justify-center">
-              {coverImage ? <img src={product.imageUrls?.[0]} alt="" /> : <FileImageOutlined />}
+              {coverImageName ? (
+                <img
+                  src={blobImagePath + coverImageName}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <FileImageOutlined />
+              )}
             </div>
             <div className="grow">
               <div>{product.name}</div>
