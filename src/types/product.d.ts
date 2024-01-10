@@ -5,7 +5,7 @@ interface ISizePriceStock {
 }
 
 interface IProduct {
-  id?: string
+  _id?: string
   name: string // 名稱
   isOnShelf: boolean // 上架
   imgNames?: string[] // 圖片

@@ -37,9 +37,10 @@ const ProductsPage: React.FC<{}> = () => {
       {products.map((product) => {
         const coverImageName = product.imgNames?.[0]
         return (
-          <div
-            key={product.id}
+          <Link
+            key={product._id}
             className="mb-2 flex w-full items-center rounded-lg border border-solid border-gray-200 p-4"
+            href={`products/${product._id}`}
           >
             <div className="mr-2 flex h-16 w-16 items-center justify-center">
               {coverImageName ? (
@@ -56,7 +57,7 @@ const ProductsPage: React.FC<{}> = () => {
               <div>{product.name}</div>
               <div className="text-sm font-thin text-gray-300">{product.createTime}</div>
             </div>
-          </div>
+          </Link>
         )
       })}
     </div>
