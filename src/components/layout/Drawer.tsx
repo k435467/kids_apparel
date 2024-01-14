@@ -1,11 +1,12 @@
 'use client'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { CloseOutlined, ControlOutlined, LogoutOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import { motion, type Variants } from 'framer-motion'
 import AntdThemeProvider from '@/components/AntdThemeProvider'
 import { signOut, useSession } from 'next-auth/react'
+import { useCategories } from '@/utils/network'
 
 const BottomSection: React.FC<{ closeDrawer: () => void }> = ({ closeDrawer }) => {
   const { data: session } = useSession()
@@ -59,6 +60,7 @@ export default function () {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { categories, error, isLoading } = useCategories()
 
   const isOpen = searchParams.get('sideBar') === '1'
 
@@ -67,18 +69,6 @@ export default function () {
     params.delete('sideBar')
     return params.toString()
   }, [searchParams])
-
-  const [categories, setCategories] = useState<ICategory[]>([])
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const res = await fetch('/api/categories')
-      const data = await res.json()
-      setCategories(data)
-    }
-
-    fetchCategories()
-  }, [])
 
   return (
     <AntdThemeProvider>
@@ -111,9 +101,15 @@ export default function () {
 
           {categories.map((category) => (
             <div key={category._id} className="w-full px-4 py-2">
-              {category.title}
+              <Link href={`/categories/${category._id}`}>{category.title}</Link>
             </div>
           ))}
+
+          {isLoading && (
+            <div key="loading" className="w-full px-4 py-2">
+              載入中
+            </div>
+          )}
         </div>
 
         <div className="mb-4 shrink-0">

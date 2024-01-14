@@ -17,6 +17,7 @@ import UploadListItem from '@/components/product/UploadListItem'
 import { DragDropContext, Draggable, DropResult } from 'react-beautiful-dnd'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
+import { useCategories } from '@/utils/network'
 
 // Ref: https://github.com/atlassian/react-beautiful-dnd/issues/2444#issuecomment-1457541204
 const Droppable = dynamic(() => import('react-beautiful-dnd').then((res) => res.Droppable), {
@@ -78,21 +79,7 @@ const ProductEditor: React.FC<IProductEditorProps> = ({
     setFilesUploaded(items)
   }
 
-  const [categories, setCategories] = useState<ICategory[]>([])
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await fetch('/api/categories')
-        const data = await res.json()
-        setCategories(data)
-      } catch (err) {
-        console.error(err)
-      }
-    }
-
-    fetchCategories()
-  }, [])
+  const { categories } = useCategories()
 
   useEffect(() => {
     setFilesUploaded(initImgNames)

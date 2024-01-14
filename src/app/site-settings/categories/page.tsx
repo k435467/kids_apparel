@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Button, Form, Input, message, Switch, Typography } from 'antd'
 import { DeleteOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
+import { useSWRConfig } from 'swr'
 
 const defaultCategory: ICategory = {
   isOnShelf: true,
@@ -37,6 +38,7 @@ const CategoriesPage: React.FC<{}> = () => {
     fetchCategories()
   }, [])
 
+  const { mutate } = useSWRConfig()
   const handleFinish = async (value: any) => {
     const currentTime = new Date()
     const categories = value.categories as ICategory[]
@@ -77,10 +79,12 @@ const CategoriesPage: React.FC<{}> = () => {
 
       await Promise.all([promises])
 
+      messageApi.success('成功')
+      await mutate('/api/categories')
+
       setTimeout(() => {
         router.push('/site-settings')
       }, 1000)
-      messageApi.success('成功')
     } catch (err) {
       setSubmitBtnDisabled(false)
       console.error(err)
@@ -140,6 +144,7 @@ const CategoriesPage: React.FC<{}> = () => {
                                   method: 'DELETE',
                                 })
                                 remove(index)
+                                mutate('/api/categories')
                                 messageApi.success('刪除成功')
                               } catch (err) {
                                 console.error(err)
