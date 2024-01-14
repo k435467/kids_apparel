@@ -13,10 +13,20 @@ const BottomSection: React.FC<{ closeDrawer: () => void }> = ({ closeDrawer }) =
   return (
     <div className="ml-2">
       {session?.user?.role === 'admin' && (
-        <Link href="/site-settings" className="flex items-center bg-transparent p-2">
-          <ControlOutlined />
-          <div className="ml-2">管理者介面</div>
-        </Link>
+        <>
+          <Link href="/site-settings" className="flex items-center bg-transparent p-2">
+            <ControlOutlined />
+            <div className="ml-2">管理者介面</div>
+          </Link>
+          <Link href="/site-settings/categories" className="flex items-center bg-transparent p-2">
+            <ControlOutlined />
+            <div className="ml-2">分類管理</div>
+          </Link>
+          <Link href="/site-settings/products" className="flex items-center bg-transparent p-2">
+            <ControlOutlined />
+            <div className="ml-2">商品管理</div>
+          </Link>
+        </>
       )}
 
       {session?.user && (

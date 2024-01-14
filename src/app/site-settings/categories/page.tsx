@@ -1,7 +1,8 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Form, Input, message, Switch, Typography } from 'antd'
 import { DeleteOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons'
+import { useRouter } from 'next/navigation'
 
 const defaultCategory: ICategory = {
   isOnShelf: true,
@@ -9,7 +10,9 @@ const defaultCategory: ICategory = {
 }
 
 const CategoriesPage: React.FC<{}> = () => {
+  const router = useRouter()
   const [form] = Form.useForm()
+  const [submitBtnDisabled, setSubmitBtnDisabled] = useState<boolean>(false)
 
   const [messageApi, contextHolder] = message.useMessage()
 
@@ -47,6 +50,7 @@ const CategoriesPage: React.FC<{}> = () => {
     const categoriesWithoutId = categoriesWithOrder.filter((v) => typeof v._id !== 'string')
 
     try {
+      setSubmitBtnDisabled(true)
       const promiseOfUpdate =
         categoriesWithId.length > 0
           ? fetch('/api/categories', {
@@ -74,10 +78,11 @@ const CategoriesPage: React.FC<{}> = () => {
       await Promise.all([promises])
 
       setTimeout(() => {
-        fetchCategories()
-      }, 300)
+        router.push('/site-settings')
+      }, 1000)
       messageApi.success('成功')
     } catch (err) {
+      setSubmitBtnDisabled(false)
       console.error(err)
       messageApi.error('失敗')
     }
@@ -140,6 +145,8 @@ const CategoriesPage: React.FC<{}> = () => {
                                 console.error(err)
                                 messageApi.error('刪除失敗')
                               }
+                            } else {
+                              remove(index)
                             }
                           }}
                           icon={<DeleteOutlined />}
@@ -167,7 +174,7 @@ const CategoriesPage: React.FC<{}> = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" disabled={submitBtnDisabled}>
             儲存
           </Button>
         </Form.Item>
