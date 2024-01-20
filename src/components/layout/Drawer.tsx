@@ -101,7 +101,7 @@ export default function () {
 
           {categories.map((category) => (
             <div key={category._id} className="w-full px-4 py-2">
-              <Link href={`/categories/${category._id}`}>{category.title}</Link>
+              <Link href={`/categories/${category._id}/products`}>{category.title}</Link>
             </div>
           ))}
 

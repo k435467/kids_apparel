@@ -24,11 +24,12 @@ export async function PUT(req: NextRequest) {
     const db = client.db('kids-apparel')
 
     const product: IProduct = await req.json()
-    const oId = new ObjectId(product._id)
+    const prdObjId = new ObjectId(product._id)
+    const catObjId = new ObjectId(product.categoryId)
 
     const updateResult = await db
       .collection('products')
-      .replaceOne({ _id: oId }, { ...product, _id: oId })
+      .replaceOne({ _id: prdObjId }, { ...product, _id: prdObjId, categoryId: catObjId })
 
     return Response.json(updateResult)
   } catch (err) {
