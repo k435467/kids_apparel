@@ -1,6 +1,6 @@
 'use client'
+import ProductCard from '@/components/product/ProductCard'
 import { useCategoryProducts } from '@/utils/network'
-import { useEffect, useState } from 'react'
 
 export default function CategoryProducts({ params }: { params: { categoryId: string } }) {
   const { categoryId } = params
@@ -11,12 +11,15 @@ export default function CategoryProducts({ params }: { params: { categoryId: str
     return <div>載入中...</div>
   }
 
+  if (products.length === 0) {
+    return <div>該分類尚無商品</div>
+  }
+
   return (
     <div>
-      <div>CategoryProducts</div>
-      <div>
+      <div className="mx-1 grid grid-cols-2 gap-2">
         {products.map((product) => {
-          return <div>{product.name}</div>
+          return <ProductCard key={product._id} product={product} />
         })}
       </div>
     </div>

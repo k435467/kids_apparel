@@ -12,11 +12,12 @@ export async function GET(req: NextRequest, { params }: { params: { categoryId: 
     const oId = new ObjectId(categoryId)
 
     const cursor = db.collection('products').find(
-      { categoryId: oId },
+      { categoryId: oId, isOnShelf: true },
       {
         sort: {
           _id: 1,
         },
+        limit: 10,
       },
     )
 

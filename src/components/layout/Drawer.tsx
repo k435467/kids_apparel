@@ -107,7 +107,7 @@ export default function () {
 
           {isLoading && (
             <div key="loading" className="w-full px-4 py-2">
-              載入中
+              載入中...
             </div>
           )}
         </div>

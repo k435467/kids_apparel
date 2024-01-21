@@ -22,3 +22,13 @@ export const useCategoryProducts = (categoryId: string) => {
     isLoading,
   }
 }
+
+export const useProduct = (productId: string) => {
+  const { data, error, isLoading } = useSWR(`/api/products/${productId}`, fetcher)
+
+  return {
+    product: (data as IProduct | null) ?? null,
+    error,
+    isLoading,
+  }
+}
