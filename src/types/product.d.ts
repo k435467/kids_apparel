@@ -1,7 +1,7 @@
 interface ISizePriceStock {
   size: string
-  price: string | null
-  stock: string | null
+  price: number | null
+  stock: number | null
 }
 
 interface IProduct {
@@ -25,4 +25,12 @@ interface ICategory {
   title: string
   order?: number
   createTime?: Date
+}
+
+interface ICartItem {
+  _id?: string
+  addTime: Date
+  productId: string
+  size: string
+  price: number
 }

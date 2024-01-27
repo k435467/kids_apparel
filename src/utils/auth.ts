@@ -13,19 +13,19 @@ export const authOptions: AuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-    GithubProvider({
-      clientId: process.env.GITHUB_ID!,
-      clientSecret: process.env.GITHUB_SECRET!,
-      profile(profile: GithubProfile) {
-        return {
-          id: profile.id.toString(),
-          name: profile.name,
-          email: profile.email,
-          image: profile.avatar_url,
-          // role: '',
-        }
-      },
-    }),
+    // GithubProvider({
+    //   clientId: process.env.GITHUB_ID!,
+    //   clientSecret: process.env.GITHUB_SECRET!,
+    //   profile(profile: GithubProfile) {
+    //     return {
+    //       id: profile.id.toString(),
+    //       name: profile.name,
+    //       email: profile.email,
+    //       image: profile.avatar_url,
+    //       // role: '',
+    //     }
+    //   },
+    // }),
   ],
   debug: true, // TODO - disable debug on production
   session: {
@@ -35,6 +35,7 @@ export const authOptions: AuthOptions = {
     jwt({ token, user }) {
       if (user) {
         token.role = user.role
+        token.id = user.id
       }
       return token
     },
@@ -42,6 +43,7 @@ export const authOptions: AuthOptions = {
       session.user = {
         ...session.user,
         role: token.role,
+        id: token.id,
       }
       return session
     },
