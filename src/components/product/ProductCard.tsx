@@ -4,7 +4,7 @@ import Link from 'next/link'
 import React from 'react'
 
 const ProductCard: React.FC<{ product: IProduct }> = ({ product }) => {
-  const sellPrice = Math.min(...product.sizes.map((v) => (v.price ? parseInt(v.price) : 100000)))
+  const sellPrice = Math.min(...product.sizes.map((v) => (v.price ? v.price : 100000)))
 
   return (
     <Link className="w-full" href={`/products/${product._id}`}>
