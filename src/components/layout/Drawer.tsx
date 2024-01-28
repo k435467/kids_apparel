@@ -1,7 +1,7 @@
 'use client'
 import React, { useMemo } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { CloseOutlined, ControlOutlined, LogoutOutlined } from '@ant-design/icons'
+import { CloseOutlined, ControlOutlined, FileTextOutlined, LogoutOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import { motion, type Variants } from 'framer-motion'
 import AntdThemeProvider from '@/components/AntdThemeProvider'
@@ -13,6 +13,11 @@ const BottomSection: React.FC<{ closeDrawer: () => void }> = ({ closeDrawer }) =
 
   return (
     <div className="ml-2">
+      <Link href="/privacy-policy" className="flex items-center bg-transparent p-2">
+        <FileTextOutlined />
+        <div className="ml-2">隱私政策</div>
+      </Link>
+
       {session?.user?.role === 'admin' && (
         <>
           <Link href="/site-settings" className="flex items-center bg-transparent p-2">
