@@ -5,16 +5,19 @@ import { CloseOutlined, ControlOutlined, FileTextOutlined, LogoutOutlined } from
 import Link from 'next/link'
 import { motion, type Variants } from 'framer-motion'
 import AntdThemeProvider from '@/components/AntdThemeProvider'
+import { signOut, useSession } from 'next-auth/react'
 import { useCategories } from '@/utils/network'
 
 const BottomSection: React.FC<{ closeDrawer: () => void }> = ({ closeDrawer }) => {
+  const { data: session } = useSession()
+
   return (
     <div className="ml-2">
       <Link href="/privacy-policy" className="flex items-center bg-transparent p-2">
         <FileTextOutlined />
         <div className="ml-2">隱私政策</div>
       </Link>
-      {/* 
+
       {session?.user?.role === 'admin' && (
         <>
           <Link href="/site-settings" className="flex items-center bg-transparent p-2">
@@ -30,8 +33,8 @@ const BottomSection: React.FC<{ closeDrawer: () => void }> = ({ closeDrawer }) =
             <div className="ml-2">商品管理</div>
           </Link>
         </>
-      )} */}
-      {/* 
+      )}
+
       {session?.user && (
         <button
           className="flex items-center bg-transparent p-2"
@@ -46,7 +49,7 @@ const BottomSection: React.FC<{ closeDrawer: () => void }> = ({ closeDrawer }) =
           <LogoutOutlined />
           <div className="ml-2">登出</div>
         </button>
-      )} */}
+      )}
     </div>
   )
 }

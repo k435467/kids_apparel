@@ -1,4 +1,5 @@
 import clientPromise from '@/utils/mongodb'
+import { getServerSession } from 'next-auth'
 import { authOptions } from '@/utils/auth'
 import { NextRequest } from 'next/server'
 import { ObjectId } from 'mongodb'
@@ -38,10 +39,10 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  // const session = await getServerSession(authOptions)
-  // if (!session || session.user?.role != 'admin') {
-  //   return Response.json({ message: 'Please check the role of the user.' }, { status: 403 })
-  // }
+  const session = await getServerSession(authOptions)
+  if (!session || session.user?.role != 'admin') {
+    return Response.json({ message: 'Please check the role of the user.' }, { status: 403 })
+  }
 
   try {
     const client = await clientPromise
