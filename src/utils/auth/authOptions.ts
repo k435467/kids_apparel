@@ -1,14 +1,21 @@
 import { AuthOptions } from 'next-auth'
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter'
-import GoogleProvider from 'next-auth/providers/google'
+import CredentialsProvider from 'next-auth/providers/credentials'
 import clientPromise from '@/utils/mongodb'
+import { authorize } from '@/utils/auth/authorize'
+
+export const adapter = MongoDBAdapter(clientPromise)
 
 export const authOptions: AuthOptions = {
-  adapter: MongoDBAdapter(clientPromise),
+  adapter: adapter,
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    CredentialsProvider({
+      id: 'googleonetap',
+      name: 'google-one-tap',
+      credentials: {
+        credential: { type: 'text' },
+      },
+      authorize,
     }),
   ],
   debug: true, // TODO - disable debug on production
@@ -19,7 +26,7 @@ export const authOptions: AuthOptions = {
     jwt({ token, user }) {
       if (user) {
         token.role = user.role
-        token.id = user.id
+        token._id = user._id
       }
       return token
     },
@@ -27,7 +34,7 @@ export const authOptions: AuthOptions = {
       session.user = {
         ...session.user,
         role: token.role,
-        id: token.id,
+        _id: token._id,
       }
       return session
     },

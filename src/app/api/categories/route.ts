@@ -1,6 +1,6 @@
 import clientPromise from '@/utils/mongodb'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/utils/auth'
+import { authOptions } from '@/utils/auth/authOptions'
 import { NextRequest } from 'next/server'
 import { ObjectId } from 'mongodb'
 

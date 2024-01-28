@@ -1,4 +1,4 @@
-import { authOptions } from '@/utils/auth'
+import { authOptions } from '@/utils/auth/authOptions'
 import clientPromise from '@/utils/mongodb'
 import { ObjectId } from 'mongodb'
 import { getServerSession } from 'next-auth'
