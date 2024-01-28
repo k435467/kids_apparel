@@ -8,8 +8,6 @@ import Link from 'next/link'
 import { MenuOutlined } from '@ant-design/icons'
 import Drawer from '@/components/layout/Drawer'
 import UserAvatar from '@/components/layout/UserAvatar'
-import Script from 'next/script'
-import OneTapSignin from '@/components/layout/OneTapSignin'
 
 export const metadata: Metadata = {
   title: 'Kids Apparel',
@@ -21,9 +19,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="en">
-      <head>
-        <Script src="https://accounts.google.com/gsi/client" />
-      </head>
       <StyledComponentsRegistry>
         <SessionProvider session={session}>
           <body>
@@ -37,7 +32,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <Link href="/">首頁</Link>
               </div>
               <div className="mr-4 flex items-center justify-end">
-                <OneTapSignin />
                 <UserAvatar />
               </div>
             </div>
