@@ -1,6 +1,7 @@
 import clientPromise from '@/utils/mongodb'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/utils/auth'
+import { accessChecker } from '@/utils/access'
 import { NextRequest } from 'next/server'
 import { ObjectId } from 'mongodb'
 
@@ -25,8 +26,8 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
-  if (!session || session.user?.role != 'admin') {
-    return Response.json({ message: 'Please check the role of the user.' }, { status: 403 })
+  if (!accessChecker.hasManagerAccess(session?.user?.role)) {
+    return Response.json({ message: accessChecker.message.forbidden }, { status: 403 })
   }
 
   try {
@@ -45,8 +46,8 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   const session = await getServerSession(authOptions)
-  if (!session || session.user?.role != 'admin') {
-    return Response.json({ message: 'Please check the role of the user.' }, { status: 403 })
+  if (!accessChecker.hasManagerAccess(session?.user?.role)) {
+    return Response.json({ message: accessChecker.message.forbidden }, { status: 403 })
   }
 
   try {

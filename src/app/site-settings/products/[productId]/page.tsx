@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import ProductEditor from '@/components/product/ProductEditor'
 import { Form } from 'antd'
+import { AccessChecker } from '@/components/AccessChecker'
 
 export default function ProductDetailPage({ params }: { params: { productId: string } }) {
   const { productId } = params
@@ -22,15 +23,18 @@ export default function ProductDetailPage({ params }: { params: { productId: str
   }, [productId])
 
   return (
-    <ProductEditor
-      form={form}
-      formSubmitRequest={(values, imgNames) => {
-        return fetch('/api/products', {
-          method: 'PUT',
-          body: JSON.stringify({ ...values, imgNames, _id: productId }),
-        })
-      }}
-      initImgNames={imgNames}
-    />
+    <>
+      <AccessChecker level="manager" />
+      <ProductEditor
+        form={form}
+        formSubmitRequest={(values, imgNames) => {
+          return fetch('/api/products', {
+            method: 'PUT',
+            body: JSON.stringify({ ...values, imgNames, _id: productId }),
+          })
+        }}
+        initImgNames={imgNames}
+      />
+    </>
   )
 }

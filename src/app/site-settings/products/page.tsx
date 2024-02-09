@@ -4,6 +4,7 @@ import { Button, message } from 'antd'
 import { FileImageOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import { blobImagePath } from '@/utils/image'
+import { AccessChecker } from '@/components/AccessChecker'
 
 const ProductsPage: React.FC<{}> = () => {
   const [products, setProducts] = useState<IProduct[]>([])
@@ -28,6 +29,7 @@ const ProductsPage: React.FC<{}> = () => {
   return (
     <div className="p-2">
       {contextHolder}
+      <AccessChecker level="manager" />
 
       <div className="mb-2 flex w-full justify-end">
         <Link href="/site-settings/products/create">

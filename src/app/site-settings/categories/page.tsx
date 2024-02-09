@@ -4,6 +4,7 @@ import { Button, Form, Input, message, Switch, Typography } from 'antd'
 import { DeleteOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
 import { useSWRConfig } from 'swr'
+import { AccessChecker } from '@/components/AccessChecker'
 
 const defaultCategory: ICategory = {
   isOnShelf: true,
@@ -95,6 +96,7 @@ const CategoriesPage: React.FC<{}> = () => {
   return (
     <div className="container mx-auto p-2">
       {contextHolder}
+      <AccessChecker level="manager" />
       <Form
         name="categories-form"
         layout="vertical"

@@ -7,6 +7,7 @@ import { motion, type Variants } from 'framer-motion'
 import AntdThemeProvider from '@/components/AntdThemeProvider'
 import { signOut, useSession } from 'next-auth/react'
 import { useCategories } from '@/utils/network'
+import { accessChecker } from '@/utils/access'
 
 const BottomSection: React.FC<{ closeDrawer: () => void }> = ({ closeDrawer }) => {
   const { data: session } = useSession()
@@ -18,7 +19,7 @@ const BottomSection: React.FC<{ closeDrawer: () => void }> = ({ closeDrawer }) =
         <div className="ml-2">隱私政策</div>
       </Link>
 
-      {session?.user?.role === 'admin' && (
+      {accessChecker.hasManagerAccess(session?.user?.role) && (
         <>
           <Link href="/site-settings" className="flex items-center bg-transparent p-2">
             <ControlOutlined />

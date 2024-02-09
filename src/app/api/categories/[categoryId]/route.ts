@@ -1,4 +1,5 @@
 import { authOptions } from '@/utils/auth'
+import { accessChecker } from '@/utils/access'
 import clientPromise from '@/utils/mongodb'
 import { ObjectId } from 'mongodb'
 import { getServerSession } from 'next-auth'
@@ -6,8 +7,8 @@ import { NextRequest } from 'next/server'
 
 export async function DELETE(req: NextRequest, { params }: { params: { categoryId: string } }) {
   const session = await getServerSession(authOptions)
-  if (!session || session.user?.role != 'admin') {
-    return Response.json({ message: 'Please check the role of the user.' }, { status: 403 })
+  if (!accessChecker.hasManagerAccess(session?.user?.role)) {
+    return Response.json({ message: accessChecker.message.forbidden }, { status: 403 })
   }
 
   if (params.categoryId.length < 1) {

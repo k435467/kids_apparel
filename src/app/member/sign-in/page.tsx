@@ -4,6 +4,7 @@ import { Button, ConfigProvider, Form, Input, Segmented, message } from 'antd'
 import type { FormItemProps } from 'antd'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
 
 type FieldType = {
   phoneNumber: string
@@ -70,7 +71,9 @@ const SignInForm: React.FC<{ isActive: boolean }> = ({ isActive }) => {
         tooltip="6~20位的數字及英文字母"
         rules={fieldRules.password}
       >
-        <Input type="password" />
+        <Input.Password
+          iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+        />
       </Form.Item>
       <Button block className="mt-4" type="primary" htmlType="submit">
         登入
@@ -154,7 +157,9 @@ const SignUpForm: React.FC<{ isActive: boolean }> = ({ isActive }) => {
         tooltip="6~20位的數字及英文字母"
         rules={fieldRules.password}
       >
-        <Input type="password" />
+        <Input.Password
+          iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+        />
       </Form.Item>
       <Form.Item<FieldType>
         name="verifyPassword"
@@ -163,7 +168,9 @@ const SignUpForm: React.FC<{ isActive: boolean }> = ({ isActive }) => {
         tooltip="請再輸入一次密碼"
         rules={fieldRules.verifyPassword}
       >
-        <Input type="password" />
+        <Input.Password
+          iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+        />
       </Form.Item>
       <Form.Item<FieldType>
         name="userName"
