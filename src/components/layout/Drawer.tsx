@@ -8,6 +8,7 @@ import AntdThemeProvider from '@/components/AntdThemeProvider'
 import { signOut, useSession } from 'next-auth/react'
 import { useCategories } from '@/utils/network'
 import { accessChecker } from '@/utils/access'
+import { Spin } from 'antd'
 
 const BottomSection: React.FC<{ closeDrawer: () => void }> = ({ closeDrawer }) => {
   const { data: session } = useSession()
@@ -98,18 +99,22 @@ export default function () {
           </div>
 
           <div key="go-to-home" className="w-full px-4 py-2">
-            <Link href="/">首頁</Link>
+            <Link className="block" href="/">
+              首頁
+            </Link>
           </div>
 
           {categories.map((category) => (
             <div key={category._id} className="w-full px-4 py-2">
-              <Link href={`/categories/${category._id}/products`}>{category.title}</Link>
+              <Link className="block" href={`/categories/${category._id}/products`}>
+                {category.title}
+              </Link>
             </div>
           ))}
 
           {isLoading && (
-            <div key="loading" className="w-full px-4 py-2">
-              載入中...
+            <div className="flex h-10 items-center justify-center">
+              <Spin />
             </div>
           )}
         </div>

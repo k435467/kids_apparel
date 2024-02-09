@@ -1,18 +1,27 @@
 'use client'
 import ProductCard from '@/components/product/ProductCard'
 import { useCategoryProducts } from '@/utils/network'
+import { Empty, Spin } from 'antd'
 
 export default function CategoryProducts({ params }: { params: { categoryId: string } }) {
   const { categoryId } = params
 
-  const { products, error, isLoading } = useCategoryProducts(categoryId)
+  const { products } = useCategoryProducts(categoryId)
 
   if (products.length > 0 && products[0].categoryId != categoryId) {
-    return <div>載入中...</div>
+    return (
+      <div className="flex h-40 items-center justify-center">
+        <Spin />
+      </div>
+    )
   }
 
   if (products.length === 0) {
-    return <div>該分類尚無商品</div>
+    return (
+      <div className="mt-8">
+        <Empty />
+      </div>
+    )
   }
 
   return (

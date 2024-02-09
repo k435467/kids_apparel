@@ -1,17 +1,21 @@
 'use client'
 import { blobImagePath } from '@/utils/image'
 import { useProduct } from '@/utils/network'
-import { Form, Select, Button, Input } from 'antd'
+import { Form, Select, Button, Input, Spin } from 'antd'
 
 export default function ProductDetailPage({ params }: { params: { productId: string } }) {
   const { productId } = params
 
   const [form] = Form.useForm()
 
-  const { product, error, isLoading } = useProduct(productId)
+  const { product, isLoading } = useProduct(productId)
 
   if (isLoading || !product) {
-    return <div>載入中...</div>
+    return (
+      <div className="flex h-40 items-center justify-center">
+        <Spin />
+      </div>
+    )
   }
 
   const handleAddToCart = (values: { size: string; quantity: number }) => {
