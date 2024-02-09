@@ -4,10 +4,26 @@ export const fetcher = (input: string | URL | globalThis.Request, init?: Request
   fetch(input, init).then((res) => res.json())
 
 export const useCategories = () => {
-  const { data, error, isLoading } = useSWR('/api/categories', fetcher)
+  const { data, error, isLoading } = useSWR('/api/categories', fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+  })
 
   return {
     categories: (data as ICategory[]) ?? [],
+    error,
+    isLoading,
+  }
+}
+
+export const useHomePageProducts = () => {
+  const { data, error, isLoading } = useSWR('/api/products/home-page', fetcher, {
+    revalidateOnFocus: false,
+    revalidateIfStale: false,
+  })
+
+  return {
+    products: (data as IProduct[]) ?? [],
     error,
     isLoading,
   }
@@ -18,6 +34,19 @@ export const useCategoryProducts = (categoryId: string) => {
 
   return {
     products: (data as IProduct[]) ?? [],
+    error,
+    isLoading,
+  }
+}
+
+export const useProductTotalCount = () => {
+  const { data, error, isLoading } = useSWR('/api/products/count', fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+  })
+
+  return {
+    productTotalCount: (data as number | null) ?? null,
     error,
     isLoading,
   }

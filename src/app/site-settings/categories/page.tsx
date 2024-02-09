@@ -5,6 +5,8 @@ import { DeleteOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-des
 import { useRouter } from 'next/navigation'
 import { useSWRConfig } from 'swr'
 import { AccessChecker } from '@/components/AccessChecker'
+import { useSession } from 'next-auth/react'
+import { accessChecker } from '@/utils/access'
 
 const defaultCategory: ICategory = {
   isOnShelf: true,
@@ -12,6 +14,7 @@ const defaultCategory: ICategory = {
 }
 
 const CategoriesPage: React.FC<{}> = () => {
+  const session = useSession()
   const router = useRouter()
   const [form] = Form.useForm()
   const [submitBtnDisabled, setSubmitBtnDisabled] = useState<boolean>(false)
@@ -186,13 +189,15 @@ const CategoriesPage: React.FC<{}> = () => {
           </Button>
         </Form.Item>
 
-        <Form.Item noStyle shouldUpdate>
-          {() => (
-            <Typography>
-              <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>
-            </Typography>
-          )}
-        </Form.Item>
+        {accessChecker.hasAdminAccess(session.data?.user?.role) && (
+          <Form.Item noStyle shouldUpdate>
+            {() => (
+              <Typography>
+                <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>
+              </Typography>
+            )}
+          </Form.Item>
+        )}
       </Form>
     </div>
   )

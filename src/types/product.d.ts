@@ -8,6 +8,7 @@ interface IProduct {
   _id?: string
   name: string // 名稱
   isOnShelf: boolean // 上架
+  isOnHomePage: boolean // 在首頁顯示
   imgNames?: string[] // 圖片
   categoryId: string // 分類
   description: string // 描述

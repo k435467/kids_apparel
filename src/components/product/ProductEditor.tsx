@@ -260,6 +260,14 @@ const ProductEditor: React.FC<IProductEditorProps> = ({
         <Form.Item name="isOnShelf" label="上架" valuePropName="checked" initialValue={true}>
           <Switch />
         </Form.Item>
+        <Form.Item
+          name="isOnHomePage"
+          label="顯示在首頁"
+          valuePropName="checked"
+          initialValue={true}
+        >
+          <Switch />
+        </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
             儲存

@@ -5,12 +5,21 @@ import { accessChecker } from '@/utils/access'
 import { NextRequest } from 'next/server'
 import { ObjectId } from 'mongodb'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const searchParams = req.nextUrl.searchParams
+    const page = parseInt(searchParams.get('page') ?? '1')
+    if (page < 1) {
+      throw new Error('Page is invalid.')
+    }
+
     const client = await clientPromise
     const db = client.db('kids-apparel')
 
-    const products = await db.collection('products').find({}).limit(10).toArray()
+    const products = await db
+      .collection('products')
+      .find({}, { sort: { _id: -1 }, limit: 10, skip: 10 * (page - 1) })
+      .toArray()
 
     return Response.json(products)
   } catch (err) {

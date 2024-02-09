@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import ProductEditor from '@/components/product/ProductEditor'
-import { Form } from 'antd'
+import { Button, Form } from 'antd'
 import { AccessChecker } from '@/components/AccessChecker'
 
 export default function ProductDetailPage({ params }: { params: { productId: string } }) {
