@@ -18,6 +18,8 @@ import { DragDropContext, Draggable, DropResult } from 'react-beautiful-dnd'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { useCategories } from '@/utils/network'
+import { useSession } from 'next-auth/react'
+import { accessChecker } from '@/utils/access'
 
 // Ref: https://github.com/atlassian/react-beautiful-dnd/issues/2444#issuecomment-1457541204
 const Droppable = dynamic(() => import('react-beautiful-dnd').then((res) => res.Droppable), {
@@ -35,6 +37,7 @@ const ProductEditor: React.FC<IProductEditorProps> = ({
   formSubmitRequest,
   initImgNames,
 }) => {
+  const session = useSession()
   const router = useRouter()
 
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -88,8 +91,7 @@ const ProductEditor: React.FC<IProductEditorProps> = ({
   return (
     <div className="container mx-auto p-2">
       {contextHolder}
-      <h1>Categories</h1>
-      <div className="mt-2">
+      <div className="my-2">
         <input
           hidden
           ref={fileInputRef}
@@ -192,7 +194,7 @@ const ProductEditor: React.FC<IProductEditorProps> = ({
                           icon={<DeleteOutlined />}
                           type="text"
                           size="small"
-                          className="ml-1 mt-1"
+                          className="ml-2 mt-1"
                         />
                       </div>
                     )
@@ -221,15 +223,15 @@ const ProductEditor: React.FC<IProductEditorProps> = ({
                         <Form.Item name={[field.name, 'price']}>
                           <InputNumber placeholder="售價" />
                         </Form.Item>
-                        <Form.Item name={[field.name, 'stock']}>
+                        {/* <Form.Item name={[field.name, 'stock']}>
                           <InputNumber placeholder="庫存" />
-                        </Form.Item>
+                        </Form.Item> */}
                         <Button
                           onClick={() => remove(index)}
                           icon={<DeleteOutlined />}
                           type="text"
                           size="small"
-                          className="ml-1 mt-1"
+                          className="ml-2 mt-1"
                         />
                       </div>
                     )
@@ -264,13 +266,15 @@ const ProductEditor: React.FC<IProductEditorProps> = ({
           </Button>
         </Form.Item>
 
-        <Form.Item noStyle shouldUpdate>
-          {() => (
-            <Typography>
-              <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>
-            </Typography>
-          )}
-        </Form.Item>
+        {accessChecker.hasAdminAccess(session.data?.user?.role) && (
+          <Form.Item noStyle shouldUpdate>
+            {() => (
+              <Typography>
+                <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>
+              </Typography>
+            )}
+          </Form.Item>
+        )}
       </Form>
     </div>
   )

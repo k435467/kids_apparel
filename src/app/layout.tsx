@@ -21,7 +21,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <StyledComponentsRegistry>
         <SessionProvider session={session}>
-          <body>
+          <body className="m-auto max-w-3xl">
             <div className="grid h-14 w-full grid-cols-3 bg-black py-1 text-white">
               <div className="ml-4 flex items-center">
                 <Link href={{ query: { sideBar: 1 } }} replace={true} className="flex">

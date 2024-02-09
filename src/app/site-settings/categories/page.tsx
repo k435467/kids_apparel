@@ -96,7 +96,7 @@ const CategoriesPage: React.FC<{}> = () => {
   return (
     <div className="container mx-auto p-2">
       {contextHolder}
-      <AccessChecker level="manager" />
+      {/* <AccessChecker level="manager" /> */}
       <Form
         name="categories-form"
         layout="vertical"

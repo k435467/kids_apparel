@@ -13,18 +13,22 @@ const useAccess = (level: UserRoleType) => {
   const router = useRouter()
   const session = useSession()
 
-  const role = session.data?.user?.role
-
   useEffect(() => {
+    console.log(session)
+    if (session.status === 'loading') {
+      return
+    }
+    const role = session.data?.user?.role
     let check = (r: typeof role) => false
-    if (level === 'admin') check = accessChecker.hasAdminAccess
     if (level === 'manager') check = accessChecker.hasManagerAccess
+    else if (level === 'admin') check = accessChecker.hasAdminAccess
 
     const ok = check(role)
     if (!ok) {
+      console.log('access denied.')
       router.replace('/')
     }
-  }, [role, level])
+  }, [level, session.status])
 }
 
 export const AccessChecker: React.FC<{ level: UserRoleType }> = ({ level }) => {

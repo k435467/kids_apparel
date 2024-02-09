@@ -9,7 +9,7 @@ export default function ProductsCreatePage() {
 
   return (
     <>
-      <AccessChecker level="manager" />
+      {/* <AccessChecker level="manager" /> */}
       <ProductEditor
         form={form}
         formSubmitRequest={(values, imgNames) => {

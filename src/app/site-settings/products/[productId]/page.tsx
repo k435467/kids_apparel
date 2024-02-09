@@ -24,7 +24,7 @@ export default function ProductDetailPage({ params }: { params: { productId: str
 
   return (
     <>
-      <AccessChecker level="manager" />
+      {/* <AccessChecker level="manager" /> */}
       <ProductEditor
         form={form}
         formSubmitRequest={(values, imgNames) => {

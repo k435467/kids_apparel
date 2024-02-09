@@ -1,7 +1,7 @@
 interface ISizePriceStock {
   size: string
   price: number | null
-  stock: number | null
+  // stock: number | null
 }
 
 interface IProduct {
