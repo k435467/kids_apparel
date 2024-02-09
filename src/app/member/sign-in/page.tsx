@@ -62,7 +62,7 @@ const SignInForm: React.FC<{ isActive: boolean }> = ({ isActive }) => {
         validateTrigger="onBlur"
         rules={fieldRules.phoneNumber}
       >
-        <Input type="number" />
+        <Input type="number" autoComplete="tel-local" />
       </Form.Item>
       <Form.Item<FieldType>
         name="password"
@@ -148,7 +148,7 @@ const SignUpForm: React.FC<{ isActive: boolean }> = ({ isActive }) => {
         validateTrigger="onBlur"
         rules={fieldRules.phoneNumber}
       >
-        <Input type="number" />
+        <Input type="number" autoComplete="tel-local" />
       </Form.Item>
       <Form.Item<FieldType>
         name="password"
@@ -170,6 +170,7 @@ const SignUpForm: React.FC<{ isActive: boolean }> = ({ isActive }) => {
       >
         <Input.Password
           iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+          autoComplete="off"
         />
       </Form.Item>
       <Form.Item<FieldType>
@@ -178,7 +179,7 @@ const SignUpForm: React.FC<{ isActive: boolean }> = ({ isActive }) => {
         validateTrigger="onBlur"
         rules={fieldRules.userName}
       >
-        <Input type="text" />
+        <Input type="text" autoComplete="off" />
       </Form.Item>
       <Button block className="mt-4" type="primary" htmlType="submit" loading={isSubmitting}>
         註冊
