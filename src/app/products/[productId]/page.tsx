@@ -1,12 +1,17 @@
 'use client'
 import { blobImagePath } from '@/utils/image'
 import { useProduct } from '@/utils/network'
-import { Form, Select, Button, Input, Spin } from 'antd'
+import { Form, Select, Button, Spin, Carousel, InputNumber } from 'antd'
+
+type FieldType = {
+  size: string
+  quantity: number
+}
 
 export default function ProductDetailPage({ params }: { params: { productId: string } }) {
   const { productId } = params
 
-  const [form] = Form.useForm()
+  const [form] = Form.useForm<FieldType>()
 
   const { product, isLoading } = useProduct(productId)
 
@@ -31,11 +36,16 @@ export default function ProductDetailPage({ params }: { params: { productId: str
 
   return (
     <div className="mb-[50%]">
-      <img
-        className="aspect-[3/4] w-full object-cover"
-        src={`${blobImagePath}${product.imgNames?.[0]}`}
-        alt=""
-      />
+      <Carousel autoplay autoplaySpeed={6000}>
+        {product.imgNames?.map((v) => (
+          <img
+            key={v}
+            className="aspect-[3/4] w-full object-cover"
+            src={`${blobImagePath}${v}`}
+            alt=""
+          />
+        ))}
+      </Carousel>
       <div className="mx-1">
         <div className="text-xl">{product.name}</div>
         <div className="mt-4">{product.description}</div>
@@ -54,24 +64,28 @@ export default function ProductDetailPage({ params }: { params: { productId: str
             size: product.sizes[0].size,
             quantity: 1,
           }}
-          className="mt-4"
+          className="mx-2 mt-4"
         >
-          <Form.Item label="尺寸" name="size" rules={[{ required: true }]}>
+          <Form.Item<FieldType> label="尺寸" name="size" rules={[{ required: true }]}>
             <Select
               options={product.sizes.map((size) => ({
                 value: size.size,
                 label: size.size,
               }))}
+              size="large"
             />
           </Form.Item>
-          <Form.Item label="數量" name="quantity" rules={[{ required: true, min: 1 }]}>
-            <Input type="number" />
+          <Form.Item<FieldType>
+            label="數量"
+            name="quantity"
+            validateTrigger="onBlur"
+            rules={[{ required: true }]}
+          >
+            <InputNumber size="large" />
           </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              加入購物車
-            </Button>
-          </Form.Item>
+          <Button block className="mt-4" type="primary" htmlType="submit" size="large">
+            加入購物車
+          </Button>
         </Form>
       </div>
     </div>
