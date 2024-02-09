@@ -1,10 +1,8 @@
-import { AuthOptions } from 'next-auth'
+import { AuthOptions, User } from 'next-auth'
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter'
 import clientPromise from '@/utils/mongodb'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcrypt'
-
-const saltRounds = 5
 
 const credentialsProviderConfigs = CredentialsProvider({
   // The name to display on the sign in form (e.g. "Sign in with...")
@@ -14,21 +12,13 @@ const credentialsProviderConfigs = CredentialsProvider({
   // e.g. domain, username, password, 2FA token, etc.
   // You can pass any HTML attribute to the <input> tag through the object.
   credentials: {
-    email: {
-      label: 'E-mail',
-      type: 'email',
-      // characters@characters.domain
-      // characters followed by an @ sign, followed by more characters, and then a "."
-      // After the "." sign, add at least 2 letters from a to z:
-      pattern: '[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,}$',
-      placeholder: 'example@gmail.com',
+    phoneNumber: {
+      label: '手機號碼',
+      type: 'number',
     },
     password: {
       label: '密碼',
       type: 'password',
-      // Must contain 8 or more characters
-      pattern: '.{6,}',
-      placeholder: '至少6個字元',
     },
   },
   async authorize(credentials, req) {
@@ -37,13 +27,15 @@ const credentialsProviderConfigs = CredentialsProvider({
 
     // Find user
     const user = (await userColl.findOne({
-      email: credentials!.email.toLowerCase(),
-    })) as {
-      _id: string
-      password: string
-    } | null
+      phoneNumber: credentials!.phoneNumber.toLowerCase(),
+    })) as
+      | ({
+          _id: string
+          password: string
+        } & User)
+      | null
     if (!user) {
-      throw new Error('該Email尚未註冊!')
+      throw new Error('該手機號碼尚未註冊!')
     }
 
     // Validate password
@@ -53,8 +45,8 @@ const credentialsProviderConfigs = CredentialsProvider({
     }
 
     return {
-      id: user._id.toString(),
       ...user,
+      id: user._id.toString(),
     }
   },
 })
@@ -71,16 +63,19 @@ export const authOptions: AuthOptions = {
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        token.role = user.role
         token.id = user.id
+        token.role = user.role
+        token.phoneNumber = user.phoneNumber
+        token.userName = user.userName
       }
       return token
     },
     session({ session, token }) {
       session.user = {
-        ...session.user,
-        role: token.role,
         id: token.id,
+        role: token.role,
+        phoneNumber: token.phoneNumber,
+        userName: token.userName,
       }
       return session
     },

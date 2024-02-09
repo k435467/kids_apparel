@@ -18,10 +18,10 @@ export default function () {
           )}
         </Link>
       ) : (
-        <button className="flex items-center bg-transparent" onClick={() => signIn()}>
+        <Link className="flex items-center" href="/member/sign-in">
           <LoginOutlined />
           <div className="ml-2">登入</div>
-        </button>
+        </Link>
       )}
     </>
   )

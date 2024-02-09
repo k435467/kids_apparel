@@ -17,7 +17,6 @@ export default function ({}) {
           <li>使用者的電子郵件地址</li>
           <li>使用者的居住地址</li>
           <li>使用者的電話號碼</li>
-          <li>使用者的行事曆資訊</li>
         </ul>
       </div>
 
@@ -49,14 +48,6 @@ export default function ({}) {
       </div>
 
       <div className="mt-8">
-        <div className="-ml-2 text-xl font-bold">使用Google OAuth:</div>
-        <div className="mt-2">
-          本網站使用Google
-          OAuth進行使用者身份驗證。透過此服務，我們可以獲得您的電子郵件地址、居住地址、電話號碼和行事曆資訊。這些信息將僅用於本隱私政策中描述的目的。
-        </div>
-      </div>
-
-      <div className="mt-8">
         <div className="-ml-2 text-xl font-bold">隱私權的變更:</div>
         <div className="mt-2">
           我們保留隨時修改本隱私政策的權利。在更新隱私政策時，我們將在本網站上張貼通知，並在生效日期之前通知您。
@@ -66,7 +57,13 @@ export default function ({}) {
       <div className="mt-8">
         <div className="-ml-2 text-xl font-bold">聯繫我們:</div>
         <div className="mt-2">
-          如果您對我們的隱私政策有任何疑問或意見，請通過以下方式與我們聯繫: k435467@gmail.com
+          如果您對我們的隱私政策有任何疑問或意見，請通過以下方式與我們聯繫:{' '}
+          <a
+            className="text-sky-600"
+            href="mailto:k435467@gmail.com?subject = Kids Apparel Feedback"
+          >
+            k435467@gmail.com
+          </a>
         </div>
       </div>
 
