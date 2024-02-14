@@ -1,8 +1,7 @@
 import bcrypt from 'bcrypt'
 import clientPromise from '@/utils/mongodb'
 import { NextRequest } from 'next/server'
-
-const saltRounds = 5
+import { saltRounds } from '@/utils/auth'
 
 export async function POST(req: NextRequest) {
   let body: { phoneNumber: string; password: string; userName: string } | undefined

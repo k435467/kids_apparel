@@ -4,6 +4,8 @@ import clientPromise from '@/utils/mongodb'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcrypt'
 
+export const saltRounds = 5
+
 const credentialsProviderConfigs = CredentialsProvider({
   // The name to display on the sign in form (e.g. "Sign in with...")
   name: 'Credentials',
