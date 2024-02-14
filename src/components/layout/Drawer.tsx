@@ -28,6 +28,15 @@ const BottomSection: React.FC<{ closeDrawer: () => void }> = ({ closeDrawer }) =
         </>
       )}
 
+      {accessChecker.hasAdminAccess(session?.user?.role) && (
+        <>
+          <Link href="/site-settings/users" className="flex items-center bg-transparent p-2">
+            <ControlOutlined />
+            <div className="ml-2">用戶管理</div>
+          </Link>
+        </>
+      )}
+
       <Link href="/privacy-policy" className="flex items-center bg-transparent p-2">
         <FileTextOutlined />
         <div className="ml-2">隱私政策</div>

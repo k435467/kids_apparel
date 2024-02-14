@@ -61,3 +61,31 @@ export const useProduct = (productId: string) => {
     isLoading,
   }
 }
+
+export const useUsersCount = () => {
+  const { data, error, isLoading } = useSWR('/api/users/count', fetcher)
+
+  return {
+    usersTotalCount: (data as number | null) ?? 0,
+    error,
+    isLoading,
+  }
+}
+
+export const useUsers = (page: string = '1') => {
+  const { data, error, isLoading } = useSWR(`/api/member/users?page=${page}`, fetcher)
+
+  return {
+    users: data as
+      | {
+          _id: string
+          phoneNumber: string
+          userName: string
+          createTime: string
+          role: string
+        }[]
+      | null,
+    error,
+    isLoading,
+  }
+}
