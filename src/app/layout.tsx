@@ -9,6 +9,7 @@ import { MenuOutlined } from '@ant-design/icons'
 import Drawer from '@/components/layout/Drawer'
 import UserAvatar from '@/components/layout/UserAvatar'
 import AntdThemeProvider from '@/components/AntdThemeProvider'
+import { DrawerLink } from '@/components/layout/DrawerLink'
 
 export const metadata: Metadata = {
   title: 'Kids Apparel',
@@ -26,9 +27,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <body className="m-auto max-w-3xl">
               <div className="grid h-14 w-full grid-cols-3 bg-black py-1 text-white">
                 <div className="ml-4 flex items-center">
-                  <Link href={{ query: { sideBar: 1 } }} replace={true} className="flex">
-                    <MenuOutlined />
-                  </Link>
+                  <DrawerLink />
                 </div>
                 <div className="flex items-center justify-center">
                   <Link href="/">首頁</Link>

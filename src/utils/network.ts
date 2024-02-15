@@ -55,6 +55,16 @@ export const useProductTotalCount = () => {
   }
 }
 
+export const useProducts = (page: number) => {
+  const { data, error, isLoading } = useSWR<IProduct[]>(`/api/products?page=${page}`, fetcher)
+
+  return {
+    products: data ?? [],
+    error,
+    isLoading,
+  }
+}
+
 export const useProduct = (productId: string) => {
   const { data, error, isLoading } = useSWR<IProduct>(`/api/products/${productId}`, fetcher)
 

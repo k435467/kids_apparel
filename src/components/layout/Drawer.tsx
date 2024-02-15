@@ -9,6 +9,7 @@ import { signOut, useSession } from 'next-auth/react'
 import { useCategories } from '@/utils/network'
 import { accessChecker } from '@/utils/access'
 import { Spin } from 'antd'
+import { createQs, createUrl } from '@/utils/navigation'
 
 const BottomSection: React.FC<{ closeDrawer: () => void }> = ({ closeDrawer }) => {
   const { data: session } = useSession()
@@ -43,8 +44,8 @@ const BottomSection: React.FC<{ closeDrawer: () => void }> = ({ closeDrawer }) =
       </Link>
 
       {session?.user && (
-        <button
-          className="flex items-center bg-transparent p-2"
+        <div
+          className="flex cursor-pointer items-center p-2"
           onClick={() => {
             // delay signOut to prevent drawer open
             closeDrawer()
@@ -55,7 +56,7 @@ const BottomSection: React.FC<{ closeDrawer: () => void }> = ({ closeDrawer }) =
         >
           <LogoutOutlined />
           <div className="ml-2">登出</div>
-        </button>
+        </div>
       )}
     </div>
   )
@@ -77,23 +78,23 @@ export default function () {
   const isOpen = searchParams.get('sideBar') === '1'
 
   const queryStringWithoutSideBar = useMemo(() => {
-    const params = new URLSearchParams(searchParams)
-    params.delete('sideBar')
-    return params.toString()
+    return createQs(searchParams, { delete: ['sideBar'] })
   }, [searchParams])
 
   return (
     <AntdThemeProvider>
       {/* Backdrop */}
+
       <div
         onClick={() => {
-          router.replace(pathname + '?' + queryStringWithoutSideBar)
+          router.replace(createUrl(pathname, searchParams, { delete: ['sideBar'] }), {
+            scroll: false,
+          })
         }}
         className={`${
           isOpen ? 'bg-black/10' : 'pointer-events-none bg-black/0'
         } absolute inset-0 z-[999] transition-all duration-300`}
       />
-
       {/* Drawer */}
       <motion.div
         variants={variants}
@@ -131,7 +132,9 @@ export default function () {
         <div className="mb-4 shrink-0">
           <BottomSection
             closeDrawer={() => {
-              router.replace(pathname + '?' + queryStringWithoutSideBar)
+              router.replace(createUrl(pathname, searchParams, { delete: ['sideBar'] }), {
+                scroll: false,
+              })
             }}
           />
         </div>
