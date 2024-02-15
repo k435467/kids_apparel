@@ -4,6 +4,9 @@ import { authOptions } from '@/utils/auth'
 import { NextRequest } from 'next/server'
 import { ObjectId } from 'mongodb'
 
+/**
+ * WIP
+ */
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session || !session.user) {

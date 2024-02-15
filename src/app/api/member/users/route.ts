@@ -4,6 +4,9 @@ import clientPromise from '@/utils/mongodb'
 import { getServerSession } from 'next-auth'
 import { NextRequest } from 'next/server'
 
+/**
+ * WIP
+ */
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!accessChecker.hasAdminAccess(session?.user?.role)) {

@@ -6,6 +6,9 @@ import { getServerSession } from 'next-auth'
 import { NextRequest } from 'next/server'
 import bcrypt from 'bcrypt'
 
+/**
+ * WIP
+ */
 export async function PUT(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!accessChecker.hasManagerAccess(session?.user?.role)) {
