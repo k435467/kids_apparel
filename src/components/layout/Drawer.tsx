@@ -69,7 +69,7 @@ const variants: Variants = {
   closed: { opacity: 0, x: '-100%' },
 }
 
-export default function () {
+export const Drawer: React.FC<{}> = ({}) => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -93,12 +93,12 @@ export default function () {
         }}
         className={`${
           isOpen ? 'bg-black/10' : 'pointer-events-none bg-black/0'
-        } absolute inset-0 z-[999] transition-all duration-300`}
+        } fixed inset-0 z-[999] transition-all duration-300`}
       />
       {/* Drawer */}
       <motion.div
         variants={variants}
-        className="absolute bottom-0 top-0 z-[1000] flex w-64 flex-col bg-black pl-8 text-white opacity-0"
+        className="fixed bottom-0 top-0 z-[1000] flex w-64 flex-col bg-black pl-8 text-white opacity-0"
         animate={isOpen ? 'open' : 'closed'}
       >
         <div className="grow">
