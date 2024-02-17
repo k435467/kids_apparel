@@ -24,19 +24,21 @@ export default function ProductDetailPage({ params }: { params: { productId: str
   }
 
   const handleAddToCart = (values: { size: string; quantity: number }) => {
-    // const cartItem: ICartItem = {
-    //   addTime: new Date(),
-    //   price: product.sizes.find((v) => v.size === values.size)?.price ?? 99999,
-    // }
-    // fetch('/api/cart', {
-    //   method: 'POST',
-    //   body: JSON.stringify(values),
-    // })
+    const reqBody = {
+      productId,
+      size: values.size,
+      quantity: values.quantity,
+      snapshot: product,
+    }
+    fetch('/api/cart', {
+      method: 'POST',
+      body: JSON.stringify({}),
+    })
   }
 
   return (
     <div className="mb-[50%]">
-      <Carousel autoplay autoplaySpeed={6000}>
+      <Carousel autoplay autoplaySpeed={3000}>
         {product.imgNames?.map((v) => (
           <img
             key={v}
