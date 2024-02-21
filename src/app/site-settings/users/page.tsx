@@ -4,7 +4,7 @@ import { Spin, Empty, Button } from 'antd'
 import React from 'react'
 
 export default function ({}) {
-  const { users, isLoading } = useUsers()
+  const { data: users, isLoading } = useUsers()
 
   if (isLoading) {
     return (

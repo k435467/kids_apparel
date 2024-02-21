@@ -28,10 +28,23 @@ interface ICategory {
   createTime?: Date
 }
 
-interface ICartItem {
-  _id?: string
-  addTime: Date
-  productId: string
-  size: string
-  price: number
+interface ICart<IdType> {
+  _id?: IdType
+  userId: IdType
+  items: {
+    productId: IdType
+    size: string
+    quantity: number
+  }[]
+  updateTime: Date
+  createTime: Date
+}
+
+interface ICartResponse<IdType> extends ICart<IdType> {
+  productData: {
+    id: IdType
+    name: string
+    size: ISizePriceStock[]
+    imgName: string
+  }[]
 }

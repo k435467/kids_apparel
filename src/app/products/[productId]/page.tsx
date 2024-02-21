@@ -1,7 +1,7 @@
 'use client'
 import { blobImagePath } from '@/utils/image'
 import { useProduct } from '@/utils/network'
-import { Form, Select, Button, Spin, Carousel, InputNumber } from 'antd'
+import { Form, Select, Button, Spin, Carousel, InputNumber, message } from 'antd'
 
 type FieldType = {
   size: string
@@ -11,9 +11,10 @@ type FieldType = {
 export default function ProductDetailPage({ params }: { params: { productId: string } }) {
   const { productId } = params
 
+  const [messageApi, contextHolder] = message.useMessage()
   const [form] = Form.useForm<FieldType>()
 
-  const { product, isLoading } = useProduct(productId)
+  const { data: product, isLoading } = useProduct(productId)
 
   if (isLoading || !product) {
     return (
@@ -28,16 +29,23 @@ export default function ProductDetailPage({ params }: { params: { productId: str
       productId,
       size: values.size,
       quantity: values.quantity,
-      snapshot: product,
     }
     fetch('/api/cart', {
-      method: 'POST',
-      body: JSON.stringify({}),
+      method: 'PUT',
+      body: JSON.stringify(reqBody),
     })
+      .then(() => {
+        messageApi.success('成功')
+        form.resetFields()
+      })
+      .catch(() => {
+        messageApi.error('失敗')
+      })
   }
 
   return (
     <div className="mb-[50%]">
+      {contextHolder}
       <Carousel autoplay autoplaySpeed={3000}>
         {product.imgNames?.map((v) => (
           <img

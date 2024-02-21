@@ -73,7 +73,7 @@ export const Drawer: React.FC<{}> = ({}) => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const { categories, error, isLoading } = useCategories()
+  const { data: categories, error, isLoading } = useCategories()
 
   const isOpen = searchParams.get('sideBar') === '1'
 
@@ -114,7 +114,7 @@ export const Drawer: React.FC<{}> = ({}) => {
             </Link>
           </div>
 
-          {categories.map((category) => (
+          {categories?.map((category) => (
             <div key={category._id} className="w-full px-4 py-2">
               <Link className="block" href={`/categories/${category._id}/products`}>
                 {category.title}

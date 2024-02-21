@@ -6,9 +6,9 @@ import { Empty, Spin } from 'antd'
 export default function CategoryProducts({ params }: { params: { categoryId: string } }) {
   const { categoryId } = params
 
-  const { products } = useCategoryProducts(categoryId)
+  const { data: products, isLoading } = useCategoryProducts(categoryId)
 
-  if (products.length > 0 && products[0].categoryId != categoryId) {
+  if (isLoading) {
     return (
       <div className="flex h-40 items-center justify-center">
         <Spin />
@@ -16,7 +16,7 @@ export default function CategoryProducts({ params }: { params: { categoryId: str
     )
   }
 
-  if (products.length === 0) {
+  if (!isLoading && products?.length === 0) {
     return (
       <div className="mt-8">
         <Empty />
@@ -27,7 +27,7 @@ export default function CategoryProducts({ params }: { params: { categoryId: str
   return (
     <div>
       <div className="mx-1 grid grid-cols-2 gap-2">
-        {products.map((product) => {
+        {products?.map((product) => {
           return <ProductCard key={product._id} product={product} />
         })}
       </div>

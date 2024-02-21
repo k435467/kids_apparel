@@ -14,9 +14,9 @@ const ProductsPage: React.FC<{}> = () => {
   const searchParams = useSearchParams()
   const page = parseInt(searchParams.get('page') ?? '1')
 
-  const { productTotalCount } = useProductTotalCount()
+  const { data: productTotalCount } = useProductTotalCount()
 
-  const { products, isLoading } = useProducts(page)
+  const { data: products, isLoading } = useProducts(page)
 
   return (
     <div className="p-2">
@@ -45,13 +45,13 @@ const ProductsPage: React.FC<{}> = () => {
           </div>
         )}
 
-        {!isLoading && products.length === 0 && (
+        {!isLoading && products?.length === 0 && (
           <div className="mt-8">
             <Empty />
           </div>
         )}
 
-        {products.map((product) => {
+        {products?.map((product) => {
           const coverImageName = product.imgNames?.[0]
           return (
             <Link

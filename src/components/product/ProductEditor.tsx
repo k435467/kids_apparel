@@ -82,7 +82,7 @@ const ProductEditor: React.FC<IProductEditorProps> = ({
     setFilesUploaded(items)
   }
 
-  const { categories } = useCategories()
+  const { data: categories } = useCategories()
 
   useEffect(() => {
     setFilesUploaded(initImgNames)
@@ -168,7 +168,7 @@ const ProductEditor: React.FC<IProductEditorProps> = ({
         </Form.Item>
         <Form.Item name="categoryId" label="分類" rules={[{ required: true }]}>
           <Select>
-            {categories.map((category) => (
+            {categories?.map((category) => (
               <Select.Option key={category._id} value={category._id}>
                 {category.title}
               </Select.Option>

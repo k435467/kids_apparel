@@ -3,90 +3,36 @@ import useSWR from 'swr'
 export const fetcher = (input: string | URL | globalThis.Request, init?: RequestInit) =>
   fetch(input, init).then((res) => res.json())
 
-export const useCategories = () => {
-  const { data, error, isLoading } = useSWR<ICategory[]>('/api/categories', fetcher, {
+export const useCategories = () =>
+  useSWR<ICategory[]>('/api/categories', fetcher, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
   })
 
-  return {
-    categories: data ?? [],
-    error,
-    isLoading,
-  }
-}
-
-export const useHomePageProducts = () => {
-  const { data, error, isLoading } = useSWR<IProduct[]>('/api/products/home-page', fetcher, {
+export const useHomePageProducts = () =>
+  useSWR<IProduct[]>('/api/products/home-page', fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
   })
 
-  return {
-    products: data ?? [],
-    error,
-    isLoading,
-  }
-}
+export const useCategoryProducts = (categoryId: string) =>
+  useSWR<IProduct[]>(`/api/categories/${categoryId}/products`, fetcher)
 
-export const useCategoryProducts = (categoryId: string) => {
-  const { data, error, isLoading } = useSWR<IProduct[]>(
-    `/api/categories/${categoryId}/products`,
-    fetcher,
-  )
-
-  return {
-    products: data ?? [],
-    error,
-    isLoading,
-  }
-}
-
-export const useProductTotalCount = () => {
-  const { data, error, isLoading } = useSWR<number>('/api/products/count', fetcher, {
+export const useProductTotalCount = () =>
+  useSWR<number>('/api/products/count', fetcher, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
   })
 
-  return {
-    productTotalCount: data ?? 0,
-    error,
-    isLoading,
-  }
-}
+export const useProducts = (page: number) =>
+  useSWR<IProduct[]>(`/api/products?page=${page}`, fetcher)
 
-export const useProducts = (page: number) => {
-  const { data, error, isLoading } = useSWR<IProduct[]>(`/api/products?page=${page}`, fetcher)
+export const useProduct = (productId: string) =>
+  useSWR<IProduct>(`/api/products/${productId}`, fetcher)
+export const useUsersCount = () => useSWR<number>('/api/users/count', fetcher)
 
-  return {
-    products: data ?? [],
-    error,
-    isLoading,
-  }
-}
-
-export const useProduct = (productId: string) => {
-  const { data, error, isLoading } = useSWR<IProduct>(`/api/products/${productId}`, fetcher)
-
-  return {
-    product: data ?? null,
-    error,
-    isLoading,
-  }
-}
-
-export const useUsersCount = () => {
-  const { data, error, isLoading } = useSWR<number>('/api/users/count', fetcher)
-
-  return {
-    usersTotalCount: data ?? 0,
-    error,
-    isLoading,
-  }
-}
-
-export const useUsers = (page: string = '1') => {
-  const { data, error, isLoading } = useSWR<
+export const useUsers = (page: string = '1') =>
+  useSWR<
     {
       _id: string
       phoneNumber: string
@@ -96,9 +42,4 @@ export const useUsers = (page: string = '1') => {
     }[]
   >(`/api/member/users?page=${page}`, fetcher)
 
-  return {
-    users: data ?? [],
-    error,
-    isLoading,
-  }
-}
+export const useCart = () => useSWR<ICartResponse<string>>('/api/cart', fetcher)
