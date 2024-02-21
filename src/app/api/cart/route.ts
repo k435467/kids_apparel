@@ -4,10 +4,7 @@ import { authOptions } from '@/utils/auth'
 import { NextRequest } from 'next/server'
 import { ObjectId } from 'mongodb'
 
-/**
- * WIP
- */
-export async function POST(req: NextRequest) {
+export async function PUT(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session || !session.user) {
     return Response.json({ message: 'Please login.' }, { status: 401 })
@@ -15,13 +12,43 @@ export async function POST(req: NextRequest) {
 
   try {
     const client = await clientPromise
-    const db = client.db('kids-apparel')
+    const coll = client.db('kids-apparel').collection('carts')
 
     const userObjectId = new ObjectId(session.user.id)
 
-    console.log(`dbg_111 user.id`, userObjectId.id)
+    let cart = await coll.findOne<ICart<ObjectId>>({ userId: userObjectId })
+    if (!cart) {
+      // Set default values
+      cart = {
+        userId: userObjectId,
+        items: [],
+        updateTime: new Date(),
+        createTime: new Date(),
+      }
+    }
 
-    // const insertResult = await db.collection('categories').insertMany(categories)
+    const reqBody: {
+      productId: string
+      size: string
+      quantity: number
+    } = await req.json()
+
+    // Add quantity or push it
+    const existedItem = cart.items.find(
+      (v) => v.productId.toString() === reqBody.productId && v.size === reqBody.size,
+    )
+    if (existedItem) {
+      existedItem.quantity += reqBody.quantity
+    } else {
+      cart.items.push({
+        productId: new ObjectId(reqBody.productId),
+        size: reqBody.size,
+        quantity: reqBody.quantity,
+      })
+    }
+
+    // Update
+    const result = await coll.updateOne({ userId: userObjectId }, { $set: cart }, { upsert: true })
 
     return Response.json({})
   } catch (err) {
@@ -41,7 +68,7 @@ export async function GET(req: NextRequest) {
     const coll = client.db('kids-apparel').collection('carts')
 
     const items = await coll
-      .aggregate([
+      .aggregate<ICartResponse<ObjectId>>([
         {
           $match: {
             userId: new ObjectId(userId),
@@ -81,7 +108,7 @@ export async function GET(req: NextRequest) {
       ])
       .toArray()
 
-    return Response.json(items)
+    return Response.json(items[0])
   } catch (err) {
     return Response.json(err, { status: 500 })
   }

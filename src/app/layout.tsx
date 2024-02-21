@@ -9,6 +9,7 @@ import { Drawer } from '@/components/layout/Drawer'
 import UserAvatar from '@/components/layout/UserAvatar'
 import AntdThemeProvider from '@/components/AntdThemeProvider'
 import { DrawerLink } from '@/components/layout/DrawerLink'
+import { Cart } from '@/components/layout/Cart'
 
 export const metadata: Metadata = {
   title: 'Kids Apparel',
@@ -32,6 +33,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   <Link href="/">首頁</Link>
                 </div>
                 <div className="mr-4 flex items-center justify-end">
+                  <Cart />
                   <UserAvatar />
                 </div>
               </div>

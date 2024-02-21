@@ -42,4 +42,8 @@ export const useUsers = (page: string = '1') =>
     }[]
   >(`/api/member/users?page=${page}`, fetcher)
 
-export const useCart = () => useSWR<ICartResponse<string>>('/api/cart', fetcher)
+export const useCart = () =>
+  useSWR<ICartResponse<string>>('/api/cart', fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+  })
