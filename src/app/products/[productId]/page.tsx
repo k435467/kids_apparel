@@ -3,6 +3,7 @@ import { blobImagePath } from '@/utils/image'
 import { useProduct } from '@/utils/network'
 import { Form, Select, Button, Spin, Carousel, InputNumber, message } from 'antd'
 import { useSWRConfig } from 'swr'
+import { currencyFormat } from '@/utils/format'
 
 type FieldType = {
   size: string
@@ -13,10 +14,15 @@ export default function ProductDetailPage({ params }: { params: { productId: str
   const { productId } = params
 
   const [messageApi, contextHolder] = message.useMessage()
+
   const [form] = Form.useForm<FieldType>()
+  const selectedSize = Form.useWatch('size', form)
+
   const { mutate } = useSWRConfig()
 
   const { data: product, isLoading } = useProduct(productId)
+  const selectedSizePrice =
+    product?.sizes.find((v) => v.size === selectedSize)?.price ?? product?.sizes[0].price
 
   if (isLoading || !product) {
     return (
@@ -98,6 +104,9 @@ export default function ProductDetailPage({ params }: { params: { productId: str
           >
             <InputNumber size="large" />
           </Form.Item>
+          <div className="m-2 w-full text-right text-lg">
+            <div>{selectedSizePrice ? currencyFormat(selectedSizePrice) : '--'}</div>
+          </div>
           <Button block className="mt-4" type="primary" htmlType="submit" size="large">
             加入購物車
           </Button>
