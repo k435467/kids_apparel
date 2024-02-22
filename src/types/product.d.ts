@@ -44,7 +44,7 @@ interface ICartResponse<IdType> extends ICart<IdType> {
   productData: {
     _id: IdType
     name: string
-    size: ISizePriceStock[]
+    sizes: ISizePriceStock[]
     imgName: string
   }[]
 }
