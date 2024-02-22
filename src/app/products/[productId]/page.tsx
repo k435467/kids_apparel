@@ -2,6 +2,7 @@
 import { blobImagePath } from '@/utils/image'
 import { useProduct } from '@/utils/network'
 import { Form, Select, Button, Spin, Carousel, InputNumber, message } from 'antd'
+import { useSWRConfig } from 'swr'
 
 type FieldType = {
   size: string
@@ -13,6 +14,7 @@ export default function ProductDetailPage({ params }: { params: { productId: str
 
   const [messageApi, contextHolder] = message.useMessage()
   const [form] = Form.useForm<FieldType>()
+  const { mutate } = useSWRConfig()
 
   const { data: product, isLoading } = useProduct(productId)
 
@@ -37,6 +39,9 @@ export default function ProductDetailPage({ params }: { params: { productId: str
       .then(() => {
         messageApi.success('成功')
         form.resetFields()
+        setTimeout(() => {
+          mutate('/api/cart')
+        }, 1000)
       })
       .catch(() => {
         messageApi.error('失敗')

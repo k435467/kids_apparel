@@ -16,7 +16,7 @@ export default function CartPage({}: {}) {
     )
   }
 
-  if (!isLoading && !cart) {
+  if (!isLoading && (!cart || !cart.items)) {
     return (
       <div className="mt-8">
         <Empty />
@@ -25,7 +25,7 @@ export default function CartPage({}: {}) {
   }
 
   const totalPrice =
-    cart?.items.reduce((t, item) => {
+    cart?.items?.reduce((t, item) => {
       const product = cart.productData.find((v) => v._id === item.productId)
       const price = product?.sizes?.find((v) => v.size === item.size)?.price
       return price ? t + price : t
@@ -33,7 +33,7 @@ export default function CartPage({}: {}) {
 
   return (
     <div className="m-4 mb-20">
-      {cart?.items.map((item, index) => {
+      {cart?.items?.map((item, index) => {
         const product = cart.productData.find((v) => v._id === item.productId)
         if (!product) return null
         const price = product.sizes?.find((v) => v.size === item.size)?.price

@@ -4,9 +4,6 @@ import { authOptions } from '@/utils/auth'
 import { NextRequest } from 'next/server'
 import { ObjectId } from 'mongodb'
 
-/**
- * TODO - Use userId as cart's _id
- */
 export async function PUT(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session || !session.user) {
@@ -19,10 +16,11 @@ export async function PUT(req: NextRequest) {
 
     const userObjectId = new ObjectId(session.user.id)
 
-    let cart = await coll.findOne<ICart<ObjectId>>({ userId: userObjectId })
+    let cart = await coll.findOne<ICart<ObjectId>>({ _id: userObjectId })
     if (!cart) {
       // Set default values
       cart = {
+        _id: userObjectId,
         userId: userObjectId,
         items: [],
         updateTime: new Date(),
@@ -51,9 +49,9 @@ export async function PUT(req: NextRequest) {
     }
 
     // Update
-    const result = await coll.updateOne({ userId: userObjectId }, { $set: cart }, { upsert: true })
+    const result = await coll.updateOne({ _id: userObjectId }, { $set: cart }, { upsert: true })
 
-    return Response.json({})
+    return Response.json(result)
   } catch (err) {
     return Response.json(err, { status: 500 })
   }
@@ -74,7 +72,7 @@ export async function GET(req: NextRequest) {
       .aggregate<ICartResponse<ObjectId>>([
         {
           $match: {
-            userId: new ObjectId(userId),
+            _id: new ObjectId(userId),
           },
         },
         {

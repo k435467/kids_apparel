@@ -13,7 +13,7 @@ export const Cart: React.FC<{}> = () => {
   return (
     <Link href="/cart" className="mr-6">
       <ShoppingCartOutlined />
-      <Badge className="!absolute" size="small" count={data?.items.length} />
+      <Badge className="!absolute" size="small" count={data?.items?.length} />
     </Link>
   )
 }
