@@ -4,6 +4,18 @@ import { authOptions } from '@/utils/auth'
 import { NextRequest } from 'next/server'
 import { ObjectId } from 'mongodb'
 
+export interface IPutCartReqBody {
+  action: 'add' | 'remove' | 'update'
+  data: {
+    productId: string
+    size: string
+    quantity: number
+  }
+}
+
+/**
+ * Add, Update, Remove
+ */
 export async function PUT(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session || !session.user) {
@@ -29,26 +41,40 @@ export async function PUT(req: NextRequest) {
     }
 
     const reqBody: {
-      productId: string
-      size: string
-      quantity: number
+      action: 'add' | 'remove' | 'update'
+      data: {
+        productId: string
+        size: string
+        quantity: number
+      }
     } = await req.json()
 
-    // Add quantity or push it
     const existedItem = cart.items.find(
-      (v) => v.productId.toString() === reqBody.productId && v.size === reqBody.size,
+      (v) => v.productId.toString() === reqBody.data.productId && v.size === reqBody.data.size,
     )
-    if (existedItem) {
-      existedItem.quantity += reqBody.quantity
-    } else {
-      cart.items.push({
-        productId: new ObjectId(reqBody.productId),
-        size: reqBody.size,
-        quantity: reqBody.quantity,
-      })
+
+    switch (reqBody.action) {
+      case 'add':
+        if (existedItem) {
+          existedItem.quantity += reqBody.data.quantity
+        } else {
+          cart.items.push({
+            productId: new ObjectId(reqBody.data.productId),
+            size: reqBody.data.size,
+            quantity: reqBody.data.quantity,
+          })
+        }
+        break
+      case 'remove':
+        cart.items = cart.items.filter((v) => v !== existedItem)
+        break
+      case 'update':
+        if (existedItem) {
+          existedItem.quantity = reqBody.data.quantity
+        }
+        break
     }
 
-    // Update
     const result = await coll.updateOne({ _id: userObjectId }, { $set: cart }, { upsert: true })
 
     return Response.json(result)
