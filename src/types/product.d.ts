@@ -1,6 +1,6 @@
 interface ISizePriceStock {
   size: string
-  price: number | null
+  price: number
   // stock: number | null
 }
 

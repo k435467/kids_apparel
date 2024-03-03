@@ -1,15 +1,31 @@
 'use client'
 import { blobImagePath } from '@/utils/image'
 import { useProduct } from '@/utils/network'
-import { Form, Select, Button, Spin, Carousel, InputNumber, message } from 'antd'
+import { Select, Button, Spin, Carousel, message } from 'antd'
 import { useSWRConfig } from 'swr'
 import { currencyFormat } from '@/utils/format'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { IPutCartReqBody } from '@/app/api/cart/route'
+import { quantityOptions } from '@/utils/misc'
 
-type FieldType = {
-  size: string
-  quantity: number
+const useSelectedSizeAndQuantity = (product: IProduct | undefined) => {
+  const [selectedSize, setSelectedSize] = useState<{
+    size: string
+    price: number
+  } | null>(null)
+  const [selectedQuantity, setSelectedQuantity] = useState<number>(1)
+
+  // Init selectedSize
+  useEffect(() => {
+    setSelectedSize(product?.sizes ? product.sizes[0] : null)
+  }, [product])
+
+  return {
+    selectedSize,
+    setSelectedSize,
+    selectedQuantity,
+    setSelectedQuantity,
+  }
 }
 
 export default function ProductDetailPage({ params }: { params: { productId: string } }) {
@@ -17,15 +33,14 @@ export default function ProductDetailPage({ params }: { params: { productId: str
 
   const [messageApi, contextHolder] = message.useMessage()
 
-  const [form] = Form.useForm<FieldType>()
-  const selectedSize = Form.useWatch('size', form)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
   const { mutate } = useSWRConfig()
 
   const { data: product, isLoading } = useProduct(productId)
-  const selectedSizePrice =
-    product?.sizes.find((v) => v.size === selectedSize)?.price ?? product?.sizes[0].price
+
+  let { selectedQuantity, selectedSize, setSelectedQuantity, setSelectedSize } =
+    useSelectedSizeAndQuantity(product)
 
   if (isLoading || !product) {
     return (
@@ -35,23 +50,23 @@ export default function ProductDetailPage({ params }: { params: { productId: str
     )
   }
 
-  const handleAddToCart = (values: { size: string; quantity: number }) => {
-    setIsSubmitting(true)
+  const handleAddToCart = () => {
+    if (!selectedSize) return
     const reqBody: IPutCartReqBody = {
       action: 'add',
       data: {
         productId,
-        size: values.size,
-        quantity: values.quantity,
+        size: selectedSize.size,
+        quantity: selectedQuantity,
       },
     }
+    setIsSubmitting(true)
     fetch('/api/cart', {
       method: 'PUT',
       body: JSON.stringify(reqBody),
     })
       .then(() => {
         messageApi.success('成功')
-        form.resetFields()
         setTimeout(() => {
           mutate('/api/cart')
         }, 1000)
@@ -69,6 +84,8 @@ export default function ProductDetailPage({ params }: { params: { productId: str
   return (
     <div className="mb-[50%]">
       {contextHolder}
+
+      {/* 圖片 */}
       <Carousel autoplay autoplaySpeed={3000}>
         {product.imgNames?.map((v) => (
           <img
@@ -79,57 +96,61 @@ export default function ProductDetailPage({ params }: { params: { productId: str
           />
         ))}
       </Carousel>
-      <div className="mx-1">
+
+      <div className="mx-4">
+        {/* 名稱, 描述 */}
         <div className="text-xl">{product.name}</div>
-        <div className="mt-4">{product.description}</div>
+
+        {/* 售價 */}
+        <div className="mt-4 text-right text-xl text-rose-600 first-letter:text-sm">
+          {selectedSize ? currencyFormat(selectedSize.price) : '--'}
+        </div>
+
+        {/* 規格 */}
+
+        <div className="mt-8 flex items-baseline gap-2">
+          <div className="break-keep">規格：</div>
+          <div className="flex flex-wrap gap-4">
+            {product.sizes.map((size) => (
+              <Button
+                key={size.size}
+                onClick={() => setSelectedSize(size)}
+                type={selectedSize === size ? 'primary' : undefined}
+              >
+                {size.size}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        {/* 數量 */}
+
+        <div className="mt-8 flex items-center gap-2">
+          <div>數量：</div>
+          <Select
+            className="min-w-[80px]"
+            options={quantityOptions}
+            value={selectedQuantity}
+            onChange={(v) => setSelectedQuantity(v)}
+          />
+        </div>
+
+        {/* 加入購物車 */}
+        <Button
+          block
+          className="mt-8"
+          type="primary"
+          size="large"
+          loading={isSubmitting}
+          onClick={handleAddToCart}
+        >
+          加入購物車
+        </Button>
+
+        <div className="mt-8">{product.description}</div>
         <ul className="ml-7 mt-4 list-disc">
           {product.descriptionList?.map((description, index) => <li key={index}>{description}</li>)}
         </ul>
-
-        <Form
-          name="add-to-cart-form"
-          layout="inline"
-          onFinish={(values) => handleAddToCart(values)}
-          onFinishFailed={() => {}}
-          autoComplete="off"
-          form={form}
-          initialValues={{
-            size: product.sizes[0].size,
-            quantity: 1,
-          }}
-          className="mx-2 mt-4"
-        >
-          <Form.Item<FieldType> label="尺寸" name="size" rules={[{ required: true }]}>
-            <Select
-              options={product.sizes.map((size) => ({
-                value: size.size,
-                label: size.size,
-              }))}
-              size="large"
-            />
-          </Form.Item>
-          <Form.Item<FieldType>
-            label="數量"
-            name="quantity"
-            validateTrigger="onBlur"
-            rules={[{ required: true }]}
-          >
-            <InputNumber size="large" />
-          </Form.Item>
-          <div className="m-2 w-full text-right text-lg">
-            <div>{selectedSizePrice ? currencyFormat(selectedSizePrice) : '--'}</div>
-          </div>
-          <Button
-            block
-            className="mt-4"
-            type="primary"
-            htmlType="submit"
-            size="large"
-            loading={isSubmitting}
-          >
-            加入購物車
-          </Button>
-        </Form>
       </div>
     </div>
   )

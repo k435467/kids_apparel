@@ -1,11 +1,12 @@
 'use client'
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { useCart } from '@/utils/network'
 import { Button, Empty, Modal, Select, Spin, message } from 'antd'
 import { blobImagePath } from '@/utils/image'
 import { currencyFormat } from '@/utils/format'
 import { IPutCartReqBody } from '@/app/api/cart/route'
 import { useSWRConfig } from 'swr'
+import { quantityOptionsWithZero } from '@/utils/misc'
 
 interface IModalData {
   isOpen: boolean
@@ -16,15 +17,6 @@ interface IModalData {
     quantity: number
   } | null
 }
-
-const quantityOptions = [
-  { value: 0, label: '0' },
-  { value: 1, label: '1' },
-  { value: 2, label: '2' },
-  { value: 3, label: '3' },
-  { value: 4, label: '4' },
-  { value: 5, label: '5' },
-]
 
 export default function CartPage({}: {}) {
   const [messageApi, contextHolder] = message.useMessage()
@@ -65,6 +57,8 @@ export default function CartPage({}: {}) {
   return (
     <div className="m-4 mb-20">
       {contextHolder}
+
+      {/* 品項 */}
       {cart?.items?.map((item, index) => {
         const product = cart.productData.find((v) => v._id === item.productId)
         if (!product) return null
@@ -102,16 +96,20 @@ export default function CartPage({}: {}) {
                 <div className="text-sm text-neutral-500">規格: {item.size}</div>
                 <div className="text-sm text-neutral-500">x{item.quantity}</div>
               </div>
-              <div className="text-right text-sm text-neutral-500">
+              <div className="text-right text-sm text-neutral-500 first-letter:text-xs">
                 {typeof price === 'number' ? currencyFormat(price) : 'N/A'}
               </div>
             </div>
           </div>
         )
       })}
-      <div className="mx-2 mt-6 flex justify-between">
+
+      {/* 總額, 下單按鈕 */}
+      <div className="mx-2 mt-6 flex items-center justify-between">
         <div>總額:</div>
-        <div>{currencyFormat(totalPrice)}</div>
+        <div className="text-xl text-rose-600 first-letter:text-sm">
+          {currencyFormat(totalPrice)}
+        </div>
       </div>
       {/*<div className="mt-6 text-center text-sm text-neutral-400">*/}
       {/*  <div>本網站只紀錄訂單，不包含金流服務</div>*/}
@@ -121,6 +119,7 @@ export default function CartPage({}: {}) {
         下單
       </Button>
 
+      {/* 編輯品項Modal */}
       <Modal
         closeIcon={false}
         open={modalData.isOpen}
@@ -132,7 +131,7 @@ export default function CartPage({}: {}) {
         <div className="flex justify-center">
           <Select
             className="mt-4 min-w-[80px]"
-            options={quantityOptions}
+            options={quantityOptionsWithZero}
             value={quantitySelectValue}
             onChange={(v) => setQuantitySelectValue(v)}
           />
