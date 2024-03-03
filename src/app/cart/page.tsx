@@ -7,6 +7,7 @@ import { currencyFormat } from '@/utils/format'
 import { IPutCartReqBody } from '@/app/api/cart/route'
 import { useSWRConfig } from 'swr'
 import { quantityOptionsWithZero } from '@/utils/misc'
+import Link from 'next/link'
 
 interface IModalData {
   isOpen: boolean
@@ -115,9 +116,11 @@ export default function CartPage({}: {}) {
       {/*  <div>本網站只紀錄訂單，不包含金流服務</div>*/}
       {/*  <div>請下單後與賣家確認付款方式</div>*/}
       {/*</div>*/}
-      <Button className="mt-6" block type="primary">
-        下單
-      </Button>
+      <Link href="/cart/placeOrder">
+        <Button className="mt-6" block type="primary">
+          下單
+        </Button>
+      </Link>
 
       {/* 編輯品項Modal */}
       <Modal
