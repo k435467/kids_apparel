@@ -47,3 +47,9 @@ export const useCart = () =>
     revalidateIfStale: false,
     revalidateOnFocus: false,
   })
+
+export const useOrders = () =>
+  useSWR<IOrderWithProductData<string, string>[]>('/api/orders', fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+  })

@@ -48,3 +48,35 @@ interface ICartResponse<IdType> extends ICart<IdType> {
     imgName: string
   }[]
 }
+
+type OrderStatusType = '已建立' | '備貨中' | '已出貨' | '已完成'
+
+interface IOrder<IdType, DateType> {
+  _id?: IdType
+  userId: IdType
+  shipMethod: '7-11' | '全家' | '宅配'
+  receiverInfo: {
+    city: string
+    district: string
+    remainingAddress: string
+    receiver: string
+    receiverPhone: string
+  }
+  items: {
+    productId: IdType
+    size: string
+    quantity: number
+  }[]
+  totalPrice: number
+  history: { time: DateType; title: OrderStatusType }[]
+  createTime?: DateType
+}
+
+interface IOrderWithProductData<IdType, DateType> extends IOrder<IdType, DateType> {
+  productData: {
+    _id: IdType
+    name: string
+    sizes: ISizePriceStock[]
+    imgName: string
+  }[]
+}
