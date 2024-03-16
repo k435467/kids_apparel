@@ -8,4 +8,4 @@ export const quantityOptions = [
 
 export const quantityOptionsWithZero = [{ value: 0, label: '0' }, ...quantityOptions]
 
-export type ShipMethodType = '7-11' | '全家' | '宅配'
+export type ShipMethodType = IOrder<string, string>['shipMethod']
