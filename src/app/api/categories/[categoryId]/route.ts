@@ -1,6 +1,6 @@
 import { authOptions } from '@/utils/auth'
 import { accessChecker } from '@/utils/access'
-import clientPromise from '@/utils/mongodb'
+import clientPromise from '@/utils/database/mongoClient'
 import { ObjectId } from 'mongodb'
 import { getServerSession } from 'next-auth'
 import { NextRequest } from 'next/server'

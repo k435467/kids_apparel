@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt'
-import clientPromise from '@/utils/mongodb'
+import clientPromise from '@/utils/database/mongoClient'
 import { NextRequest } from 'next/server'
 import { saltRounds } from '@/utils/auth'
 

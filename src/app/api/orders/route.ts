@@ -1,8 +1,9 @@
 import { NextRequest } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/utils/auth'
-import clientPromise, { mdb } from '@/utils/mongodb'
+import clientPromise from '@/utils/database/mongoClient'
 import { ObjectId } from 'mongodb'
+import { mdb } from '@/utils/database/collections'
 
 /**
  * Insert an order

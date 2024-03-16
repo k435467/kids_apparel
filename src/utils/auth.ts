@@ -1,6 +1,6 @@
 import { AuthOptions, User } from 'next-auth'
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter'
-import clientPromise from '@/utils/mongodb'
+import clientPromise from '@/utils/database/mongoClient'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcrypt'
 

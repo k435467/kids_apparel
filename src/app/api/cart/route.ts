@@ -1,4 +1,4 @@
-import clientPromise from '@/utils/mongodb'
+import clientPromise from '@/utils/database/mongoClient'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/utils/auth'
 import { NextRequest } from 'next/server'

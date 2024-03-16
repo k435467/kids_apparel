@@ -37,3 +37,6 @@ next-env.d.ts
 
 # Mongo Playground
 /*.mongodb.js
+
+# JetBrains
+.idea

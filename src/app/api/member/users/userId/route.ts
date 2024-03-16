@@ -1,6 +1,6 @@
 import { accessChecker } from '@/utils/access'
 import { authOptions, saltRounds } from '@/utils/auth'
-import clientPromise from '@/utils/mongodb'
+import clientPromise from '@/utils/database/mongoClient'
 import { ObjectId } from 'mongodb'
 import { getServerSession } from 'next-auth'
 import { NextRequest } from 'next/server'
