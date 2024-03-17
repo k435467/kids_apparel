@@ -7,6 +7,7 @@ import StyledComponentsRegistry from '@/components/StyledComponentsRegistry'
 import { Sidebar } from '@/components/layout/Sidebar'
 import AntdThemeProvider from '@/components/AntdThemeProvider'
 import { Navbar } from '@/components/layout/Navbar'
+import { Footer } from '@/components/layout/Footer'
 
 export const metadata: Metadata = {
   title: 'Kids Apparel',
@@ -17,7 +18,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const session = await getServerSession()
 
   return (
-    <html lang="en">
+    <html lang="tw">
       <AntdThemeProvider>
         <StyledComponentsRegistry>
           <SessionProvider session={session}>
@@ -26,7 +27,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
               <Sidebar />
 
-              {children}
+              <div className="min-h-screen">{children}</div>
+
+              <Footer />
             </body>
           </SessionProvider>
         </StyledComponentsRegistry>
