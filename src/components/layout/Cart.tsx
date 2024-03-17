@@ -11,9 +11,9 @@ export const Cart: React.FC<{}> = () => {
   const { data } = useCart()
 
   return (
-    <Link href="/cart" className="mr-6">
+    <Link href="/cart">
       <ShoppingCartOutlined />
-      <Badge className="!absolute" size="small" count={data?.items?.length} />
+      <Badge className="-top-2" size="small" count={data?.items?.length} />
     </Link>
   )
 }

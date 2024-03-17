@@ -4,12 +4,9 @@ import './globals.css'
 import { getServerSession } from 'next-auth'
 import SessionProvider from '@/components/SessionProvider'
 import StyledComponentsRegistry from '@/components/StyledComponentsRegistry'
-import Link from 'next/link'
-import { Drawer } from '@/components/layout/Drawer'
-import UserAvatar from '@/components/layout/UserAvatar'
+import { Sidebar } from '@/components/layout/Sidebar'
 import AntdThemeProvider from '@/components/AntdThemeProvider'
-import { DrawerLink } from '@/components/layout/DrawerLink'
-import { Cart } from '@/components/layout/Cart'
+import { Navbar } from '@/components/layout/Navbar'
 
 export const metadata: Metadata = {
   title: 'Kids Apparel',
@@ -25,19 +22,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <StyledComponentsRegistry>
           <SessionProvider session={session}>
             <body className="m-auto max-w-3xl">
-              <div className="grid h-14 w-full grid-cols-3 bg-black py-1 text-white">
-                <div className="ml-4 flex items-center">
-                  <DrawerLink />
-                </div>
-                <div className="flex items-center justify-center">
-                  <Link href="/">首頁</Link>
-                </div>
-                <div className="mr-4 flex items-center justify-end">
-                  <Cart />
-                  <UserAvatar />
-                </div>
-              </div>
-              <Drawer />
+              <Navbar />
+
+              <Sidebar />
+
               {children}
             </body>
           </SessionProvider>
