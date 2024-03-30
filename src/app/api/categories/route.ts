@@ -4,17 +4,19 @@ import { authOptions } from '@/utils/auth'
 import { accessChecker } from '@/utils/access'
 import { NextRequest } from 'next/server'
 import { ObjectId } from 'mongodb'
+import { mdb } from '@/utils/database/collections'
+import { IDocCategory } from '@/types/database'
 
 export async function GET() {
   try {
     const client = await clientPromise
-    const db = client.db('kids-apparel')
+    const db = client.db(mdb.dbName)
 
     const categories = await db
-      .collection('categories')
+      .collection<IDocCategory>(mdb.coll.categories)
       .find({})
-      .limit(10)
       .sort({ order: 1 })
+      .limit(10)
       .toArray()
 
     return Response.json(categories)

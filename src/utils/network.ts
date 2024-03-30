@@ -1,3 +1,7 @@
+/**
+ * Deprecated
+ * See ../networks
+ */
 import useSWR from 'swr'
 
 export const fetcher = (input: string | URL | globalThis.Request, init?: RequestInit) =>

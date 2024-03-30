@@ -19,7 +19,7 @@ export interface IDocUser {
   }
 }
 
-export interface IDocRecipients {
+export interface IDocRecipient {
   _id?: ObjectId | string
   address: {
     city: string
@@ -33,7 +33,7 @@ export interface IDocRecipients {
   userId: ObjectId | string
 }
 
-export interface IDocCategories {
+export interface IDocCategory {
   _id?: ObjectId | string
   createTime: Date | string
   display: boolean

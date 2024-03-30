@@ -7,11 +7,8 @@ import { useIsOpenSidebar } from '@/hooks/useIsOpenSidebar'
 import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-
-const variants: Variants = {
-  open: { opacity: 1, x: '-32px' },
-  closed: { opacity: 0, x: '-100%' },
-}
+import { useCategories } from '@/networks/categories'
+import { Menu } from 'antd'
 
 const LoginLogout: React.FC<{}> = () => {
   const router = useRouter()
@@ -20,7 +17,7 @@ const LoginLogout: React.FC<{}> = () => {
   const isLoggedIn = session?.user
 
   return (
-    <div className="text-neutral-400">
+    <div className="mx-4 text-sm text-neutral-400">
       {isLoggedIn ? (
         <div className="flex gap-6">
           <Link className="flex gap-2 py-2" href="/member">
@@ -56,8 +53,35 @@ const Backdrop: React.FC<{ onClick: () => void; open: boolean }> = ({ onClick, o
   />
 )
 
+const variants: Variants = {
+  open: { opacity: 1, x: '-32px' },
+  closed: { opacity: 0, x: '-100%' },
+}
+
+const useMenuItems = () => {
+  const { data: categories, isLoading: isLoadingCategories } = useCategories()
+
+  return [
+    {
+      key: 'categories',
+      label: '商品分類',
+      children: categories?.map((v) => ({
+        key: v._id as string,
+        label: v.title,
+      })) ?? [
+        {
+          key: 'loading',
+          label: '載入中...',
+        },
+      ],
+    },
+  ]
+}
+
 export const Sidebar: React.FC<{}> = ({}) => {
   const { isOpenSidebar, setIsOpenSidebar } = useIsOpenSidebar()
+
+  const items = useMenuItems()
 
   return (
     <AntdThemeProvider>
@@ -69,14 +93,16 @@ export const Sidebar: React.FC<{}> = ({}) => {
         className="fixed bottom-0 top-0 z-[1000] flex w-64 flex-col bg-white pl-8 text-black opacity-0"
         animate={isOpenSidebar ? 'open' : 'closed'}
       >
-        <div className="m-4">
-          <div className="pb-2">
+        <div>
+          <div className="m-4 mb-2">
             <CloseOutlined onClick={() => setIsOpenSidebar(false)} />
           </div>
 
           <LoginLogout />
 
           {/* Product Categories */}
+          <Menu className="mt-4" mode="inline" items={items} defaultOpenKeys={['categories']} />
+
           {/* Order */}
           {/* Backstage */}
         </div>

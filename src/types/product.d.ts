@@ -1,3 +1,8 @@
+/**
+ * Deprecated
+ * See database.ts
+ */
+
 interface ISizePriceStock {
   size: string
   price: number
