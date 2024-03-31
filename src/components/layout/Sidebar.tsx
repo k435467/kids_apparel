@@ -9,6 +9,8 @@ import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useCategories } from '@/networks/categories'
 import { Menu } from 'antd'
+import type { MenuProps } from 'antd'
+import { accessChecker } from '@/utils/access'
 
 const LoginLogout: React.FC<{}> = () => {
   const router = useRouter()
@@ -58,30 +60,72 @@ const variants: Variants = {
   closed: { opacity: 0, x: '-100%' },
 }
 
-const useMenuItems = () => {
+const useMenuItems = (): MenuProps['items'] => {
+  const router = useRouter()
+  const { data: session } = useSession()
   const { data: categories, isLoading: isLoadingCategories } = useCategories()
 
   return [
     {
       key: 'categories',
-      label: '商品分類',
-      children: categories?.map((v) => ({
-        key: v._id as string,
-        label: v.title,
-      })) ?? [
-        {
-          key: 'loading',
-          label: '載入中...',
-        },
-      ],
+      label: '商品',
+      children: isLoadingCategories
+        ? [
+            {
+              key: 'loading',
+              label: '載入中...',
+            },
+          ]
+        : categories?.map((v) => ({
+            key: v._id as string,
+            label: v.title,
+            onClick: () => router.push(`/categories/${v._id}/products`),
+          })),
     },
+    ...(session?.user
+      ? [
+          {
+            key: 'orders',
+            label: '訂單',
+            onClick: () => router.push('/orders'),
+          },
+        ]
+      : []),
+    ...(accessChecker.hasManagerAccess(session?.user?.role)
+      ? [
+          {
+            key: 'site-settings',
+            label: '後台',
+            children: [
+              {
+                key: 'setting-categories',
+                label: '分類',
+                onClick: () => router.push('/site-settings/categories'),
+              },
+              {
+                key: 'setting-product',
+                label: '商品',
+                onClick: () => router.push('/site-settings/products'),
+              },
+              {
+                key: 'setting-users',
+                label: '使用者',
+                onClick: () => router.push('/site-settings/users'),
+              },
+            ],
+          },
+        ]
+      : []),
   ]
 }
 
+/**
+ * For login, logout, navigation menu
+ */
 export const Sidebar: React.FC<{}> = ({}) => {
   const { isOpenSidebar, setIsOpenSidebar } = useIsOpenSidebar()
 
-  const items = useMenuItems()
+  const menuItems = useMenuItems()
 
   return (
     <AntdThemeProvider>
@@ -100,11 +144,7 @@ export const Sidebar: React.FC<{}> = ({}) => {
 
           <LoginLogout />
 
-          {/* Product Categories */}
-          <Menu className="mt-4" mode="inline" items={items} defaultOpenKeys={['categories']} />
-
-          {/* Order */}
-          {/* Backstage */}
+          <Menu className="mt-4" mode="inline" items={menuItems} defaultOpenKeys={['categories']} />
         </div>
       </motion.div>
     </AntdThemeProvider>
