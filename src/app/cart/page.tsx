@@ -5,7 +5,7 @@ import { Button, Empty, Modal, Select, Spin, message } from 'antd'
 import { blobImagePath } from '@/utils/image'
 import { currencyFormat } from '@/utils/format'
 import { IPutCartReqBody } from '@/app/api/cart/route'
-import { useSWRConfig } from 'swr'
+import { mutate } from 'swr'
 import { quantityOptionsWithZero } from '@/utils/misc'
 import Link from 'next/link'
 
@@ -21,7 +21,6 @@ interface IModalData {
 
 export default function CartPage({}: {}) {
   const [messageApi, contextHolder] = message.useMessage()
-  const { mutate } = useSWRConfig()
 
   const { data: cart, isLoading: isLoadingCart } = useCart()
 

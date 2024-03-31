@@ -2,7 +2,7 @@
 import { blobImagePath } from '@/utils/image'
 import { useProduct } from '@/utils/network'
 import { Select, Button, Spin, Carousel, message } from 'antd'
-import { useSWRConfig } from 'swr'
+import { mutate } from 'swr'
 import { currencyFormat } from '@/utils/format'
 import { useEffect, useState } from 'react'
 import { IPutCartReqBody } from '@/app/api/cart/route'
@@ -34,8 +34,6 @@ export default function ProductDetailPage({ params }: { params: { productId: str
   const [messageApi, contextHolder] = message.useMessage()
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-
-  const { mutate } = useSWRConfig()
 
   const { data: product, isLoading } = useProduct(productId)
 

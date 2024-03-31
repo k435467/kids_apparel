@@ -2,12 +2,10 @@
 import React from 'react'
 import ProductEditor from '@/components/product/ProductEditor'
 import { Form } from 'antd'
-import { AccessChecker } from '@/components/AccessChecker'
-import { useSWRConfig } from 'swr'
+import { mutate } from 'swr'
 
 export default function ProductsCreatePage() {
   const [form] = Form.useForm()
-  const { mutate } = useSWRConfig()
 
   return (
     <>

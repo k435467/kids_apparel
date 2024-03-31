@@ -3,8 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Button, Form, Input, message, Switch, Typography } from 'antd'
 import { DeleteOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
-import { useSWRConfig } from 'swr'
-import { AccessChecker } from '@/components/AccessChecker'
+import { mutate } from 'swr'
 import { useSession } from 'next-auth/react'
 import { accessChecker } from '@/utils/access'
 
@@ -42,7 +41,6 @@ const CategoriesPage: React.FC<{}> = () => {
     fetchCategories()
   }, [])
 
-  const { mutate } = useSWRConfig()
   const handleFinish = async (value: any) => {
     const currentTime = new Date()
     const categories = value.categories as ICategory[]
