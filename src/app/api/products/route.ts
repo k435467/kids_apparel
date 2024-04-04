@@ -3,25 +3,72 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/utils/auth'
 import { accessChecker } from '@/utils/access'
 import { NextRequest } from 'next/server'
-import { ObjectId } from 'mongodb'
+import { Filter, ObjectId } from 'mongodb'
+import { mdb } from '@/utils/database/collections'
+import { IDocProduct } from '@/types/database'
+
+export interface IGetProductsCondition {
+  name?: string
+  startTime?: string
+  endTime?: string
+  page?: number
+  size?: number
+  sort?: string
+  asc?: 1 | -1
+}
+
+export interface IGetProductsRes {
+  total: number
+  data: IDocProduct[]
+}
 
 export async function GET(req: NextRequest) {
   try {
-    const searchParams = req.nextUrl.searchParams
-    const page = parseInt(searchParams.get('page') ?? '1')
-    if (page < 1) {
-      throw new Error('Page is invalid.')
+    const search = req.nextUrl.searchParams
+    const condition: Required<Omit<IGetProductsCondition, 'name' | 'startTime' | 'endTime'>> &
+      Pick<IGetProductsCondition, 'name' | 'startTime' | 'endTime'> = {
+      name: search.get('name') ?? undefined,
+      startTime: search.get('startTime') ?? undefined,
+      endTime: search.get('endTime') ?? undefined,
+      page: parseInt(search.get('page') ?? '1'),
+      size: parseInt(search.get('size') ?? '10'),
+      sort: search.get('sort') ?? '_id',
+      asc: parseInt(search.get('asc') ?? '-1') as 1 | -1,
+    }
+
+    if (condition.page < 1 || condition.size > 30) {
+      throw new Error('Filter is invalid.')
     }
 
     const client = await clientPromise
-    const db = client.db('kids-apparel')
+    const productsColl = client.db(mdb.dbName).collection<IDocProduct>(mdb.coll.products)
 
-    const products = await db
-      .collection('products')
-      .find({}, { sort: { _id: -1 }, limit: 10, skip: 10 * (page - 1) })
+    const filter: Filter<IDocProduct> = {
+      ...(condition.name && {
+        name: {
+          $regex: new RegExp(condition.name, 'i'),
+        },
+      }),
+      ...((condition.startTime || condition.endTime) && {
+        createTime: {
+          ...(condition.startTime && { $gte: new Date(condition.startTime) }),
+          ...(condition.endTime && { $lte: new Date(condition.endTime) }),
+        },
+      }),
+    }
+
+    console.log(filter)
+
+    const products = await productsColl
+      .find(filter)
+      .sort({ [condition.sort]: condition.asc })
+      .limit(condition.size)
+      .skip(condition.size * (condition.page - 1))
       .toArray()
 
-    return Response.json(products)
+    const total = await productsColl.countDocuments(filter)
+
+    return Response.json({ total, data: products } as IGetProductsRes)
   } catch (err) {
     console.error(err)
     return Response.error()

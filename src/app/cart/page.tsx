@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useCart } from '@/utils/network'
 import { Button, Empty, Modal, Select, Spin, message } from 'antd'
 import { blobImagePath } from '@/utils/image'
-import { currencyFormat } from '@/utils/format'
+import { formatCurrency } from '@/utils/format'
 import { IPutCartReqBody } from '@/app/api/cart/route'
 import { mutate } from 'swr'
 import { quantityOptionsWithZero } from '@/utils/misc'
@@ -97,7 +97,7 @@ export default function CartPage({}: {}) {
                 <div className="text-sm text-neutral-500">x{item.quantity}</div>
               </div>
               <div className="text-right text-sm text-neutral-500 first-letter:text-xs">
-                {typeof price === 'number' ? currencyFormat(price) : 'N/A'}
+                {typeof price === 'number' ? formatCurrency(price) : 'N/A'}
               </div>
             </div>
           </div>
@@ -108,7 +108,7 @@ export default function CartPage({}: {}) {
       <div className="mx-2 mt-6 flex items-center justify-between">
         <div>總額:</div>
         <div className="text-xl text-rose-600 first-letter:text-sm">
-          {currencyFormat(totalPrice)}
+          {formatCurrency(totalPrice)}
         </div>
       </div>
       {/*<div className="mt-6 text-center text-sm text-neutral-400">*/}

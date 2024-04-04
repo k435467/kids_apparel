@@ -1,4 +1,4 @@
-import { currencyFormat } from '@/utils/format'
+import { formatCurrency } from '@/utils/format'
 import { blobImagePath } from '@/utils/image'
 import Link from 'next/link'
 import React from 'react'
@@ -14,7 +14,7 @@ const ProductCard: React.FC<{ product: IProduct }> = ({ product }) => {
         alt=""
       />
       <div>{product.name}</div>
-      <div className="text-neutral-500">{currencyFormat(sellPrice)}</div>
+      <div className="text-neutral-500">{formatCurrency(sellPrice)}</div>
     </Link>
   )
 }

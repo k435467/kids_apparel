@@ -3,7 +3,7 @@ import { blobImagePath } from '@/utils/image'
 import { useProduct } from '@/utils/network'
 import { Select, Button, Spin, Carousel, message } from 'antd'
 import { mutate } from 'swr'
-import { currencyFormat } from '@/utils/format'
+import { formatCurrency } from '@/utils/format'
 import { useEffect, useState } from 'react'
 import { IPutCartReqBody } from '@/app/api/cart/route'
 import { quantityOptions } from '@/utils/misc'
@@ -101,7 +101,7 @@ export default function ProductDetailPage({ params }: { params: { productId: str
 
         {/* 售價 */}
         <div className="mt-4 text-right text-xl text-rose-600 first-letter:text-sm">
-          {selectedSize ? currencyFormat(selectedSize.price) : '--'}
+          {selectedSize ? formatCurrency(selectedSize.price) : '--'}
         </div>
 
         {/* 規格 */}
