@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { ConfigProvider } from 'antd'
+import zhTW from 'antd/locale/zh_TW'
 
 /**
  * Customize the design token of antd
@@ -11,6 +12,7 @@ import { ConfigProvider } from 'antd'
 const AntdThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <ConfigProvider
+      locale={zhTW}
       theme={{
         token: {
           // tailwind: amber-400
