@@ -7,3 +7,9 @@ export const useCategories = () =>
     revalidateIfStale: false,
     revalidateOnFocus: false,
   })
+
+export const useCategory = (categoryId: string) =>
+  useSWR<IDocCategory>(`/api/categories/${categoryId}`, fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+  })

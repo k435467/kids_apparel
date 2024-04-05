@@ -34,11 +34,11 @@ export async function POST(req: NextRequest) {
 
   try {
     const client = await clientPromise
-    const db = client.db('kids-apparel')
+    const coll = client.db(mdb.dbName).collection<IDocCategory>(mdb.coll.categories)
 
-    const categories = await req.json()
+    const category = await req.json()
 
-    const insertResult = await db.collection('categories').insertMany(categories)
+    const insertResult = await coll.insertOne(category)
 
     return Response.json(insertResult)
   } catch (err) {

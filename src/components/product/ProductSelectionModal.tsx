@@ -109,9 +109,9 @@ const SearchForm: React.FC<{ onFinish: (values: FieldType) => void }> = ({ onFin
   )
 }
 
-const ProductList: React.FC<{
+export const ProductList: React.FC<{
   dataSource?: IDocProduct[]
-  loading: boolean
+  loading?: boolean
   pagination: ListProps<any>['pagination']
   selectedProducts: IDocProduct[]
   onClickProduct: (selectedProduct: IDocProduct) => void
