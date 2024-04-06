@@ -24,7 +24,7 @@ export interface ISiteSettingCateogriesEditService {
     messageApi: MessageInstance,
     router: AppRouterInstance,
   ) => void
-  addProducts?: (messageApi: MessageInstance) => void
+  addProducts?: (messageApi: MessageInstance, products: IDocProduct[]) => Promise<any>
   removeProducts?: (messageApi: MessageInstance) => void
 }
 
@@ -35,7 +35,6 @@ export const SiteSettingCategoriesEdit: React.FC<{
 }> = ({ category, isLoading, service }) => {
   const [form] = Form.useForm<FieldType>()
   const [open, setOpen] = useState<boolean>(false)
-  const [dataSource, setDataSource] = useState<IDocProduct[]>([])
   const [actionLoading, setActionLoading] = useState<boolean>(false)
 
   const [messageApi, contextHolder] = message.useMessage()
@@ -106,18 +105,24 @@ export const SiteSettingCategoriesEdit: React.FC<{
 
       {category && (
         <div className="mt-8">
-          <Button onClick={() => setOpen(true)}>選擇商品</Button>
+          <div className="flex justify-between">
+            <Button type="primary" onClick={() => setOpen(true)}>
+              選擇商品
+            </Button>
+            <div className="flex gap-4">
+              <Button>篩選</Button>
+              <Button danger>移除</Button>
+            </div>
+          </div>
           <ProductSelectionModal
             open={open}
             onCancel={() => setOpen(false)}
-            onFinish={(v) => {
-              setDataSource((x) => [...v, ...x])
-            }}
+            onFinish={(v) => service!.addProducts!(messageApi, v)}
           />
           <ProductList
-            dataSource={dataSource}
+            dataSource={[]}
             pagination={{
-              total: dataSource.length,
+              total: 0,
               current: 1,
               pageSize: 10,
               onChange: (p, s) => {},

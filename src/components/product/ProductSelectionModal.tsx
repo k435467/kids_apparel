@@ -158,22 +158,26 @@ export const ProductList: React.FC<{
 export const ProductSelectionModal: React.FC<{
   open: boolean
   onCancel: () => void
-  onFinish: (v: IDocProduct[]) => void
+  onFinish: (v: IDocProduct[]) => Promise<any>
 }> = ({ open, onCancel, onFinish }) => {
   const [condition, setCondition] = useState<IGetProductsCondition>({})
   const { data, isLoading } = useProducts(condition)
   const [selectedProducts, setSelectedProducts] = useState<IDocProduct[]>([])
+  const [actionLoading, setActionLoading] = useState<boolean>(false)
 
   return (
     <Modal
       title="選擇商品"
       open={open}
+      confirmLoading={actionLoading}
       onCancel={() => {
         onCancel()
         setSelectedProducts([])
       }}
-      onOk={() => {
-        onFinish(selectedProducts)
+      onOk={async () => {
+        setActionLoading(true)
+        await onFinish(selectedProducts)
+        setActionLoading(false)
         onCancel()
         setSelectedProducts([])
       }}
