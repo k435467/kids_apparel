@@ -144,7 +144,13 @@ export const Sidebar: React.FC<{}> = ({}) => {
 
           <LoginLogout />
 
-          <Menu className="mt-4" mode="inline" items={menuItems} defaultOpenKeys={['categories']} />
+          <Menu
+            className="mt-4"
+            mode="inline"
+            items={menuItems}
+            defaultOpenKeys={['categories']}
+            selectable={false}
+          />
         </div>
       </motion.div>
     </AntdThemeProvider>

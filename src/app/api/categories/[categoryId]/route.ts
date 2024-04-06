@@ -26,6 +26,37 @@ export async function GET(req: NextRequest, { params }: { params: { categoryId: 
   }
 }
 
+export async function PATCH(req: NextRequest, { params }: { params: { categoryId: string } }) {
+  const session = await getServerSession(authOptions)
+  if (!accessChecker.hasManagerAccess(session?.user?.role)) {
+    return Response.json({ message: accessChecker.message.forbidden }, { status: 403 })
+  }
+
+  try {
+    const client = await clientPromise
+    const coll = client.db(mdb.dbName).collection<IDocCategory>(mdb.coll.categories)
+
+    const category: IDocCategory = await req.json()
+
+    const result = await coll.updateOne(
+      { _id: new ObjectId(params.categoryId) },
+      {
+        $set: {
+          updateTime: new Date(category.updateTime),
+          sort: category.sort,
+          display: category.display,
+          title: category.title,
+        },
+      },
+    )
+
+    return Response.json(result)
+  } catch (err) {
+    console.error(err)
+    return Response.json(err, { status: 500 })
+  }
+}
+
 export async function DELETE(req: NextRequest, { params }: { params: { categoryId: string } }) {
   const session = await getServerSession(authOptions)
   if (!accessChecker.hasManagerAccess(session?.user?.role)) {
@@ -34,7 +65,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { categoryI
 
   try {
     const client = await clientPromise
-    const coll = client.db(mdb.dbName).collection(mdb.coll.categories)
+    const coll = client.db(mdb.dbName).collection<IDocCategory>(mdb.coll.categories)
 
     const deleteResult = await coll.deleteOne({ _id: new ObjectId(params.categoryId) })
 

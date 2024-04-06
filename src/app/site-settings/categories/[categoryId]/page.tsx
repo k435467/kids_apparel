@@ -1,6 +1,11 @@
 'use client'
-import { SiteSettingCategoriesEdit } from '@/components/category/setting'
+import {
+  ISiteSettingCateogriesEditService,
+  SiteSettingCategoriesEdit,
+} from '@/components/category/setting'
 import { useCategory } from '@/networks/categories'
+import { IDocCategory } from '@/types/database'
+import { mutate } from 'swr'
 
 export default function SiteSettingCategoryEditPage({
   params,
@@ -9,5 +14,35 @@ export default function SiteSettingCategoryEditPage({
 }) {
   const { data, isLoading } = useCategory(params.categoryId)
 
-  return <SiteSettingCategoriesEdit category={data} isLoading={isLoading} />
+  const service: ISiteSettingCateogriesEditService = {
+    save: (setActionLoading, formValues, messageApi, router) => {
+      setActionLoading(true)
+      fetch(`/api/categories/${params.categoryId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          title: formValues.title,
+          display: formValues.display,
+          sort: data!.sort,
+          updateTime: new Date(),
+        } as IDocCategory),
+      })
+        .then(async () => {
+          await mutate('/api/categories')
+          await mutate(`/api/categories/${params.categoryId}`)
+          messageApi.success('成功, 返回列表...')
+          setTimeout(() => {
+            router.push('/site-settings/categories')
+          }, 1000)
+        })
+        .catch((err) => {
+          setActionLoading(false)
+          messageApi.error('失敗')
+          if (err instanceof Error) {
+            messageApi.error(err.message)
+          }
+        })
+    },
+  }
+
+  return <SiteSettingCategoriesEdit category={data} isLoading={isLoading} service={service} />
 }

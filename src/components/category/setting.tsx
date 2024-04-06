@@ -5,20 +5,34 @@ import { ProductList, ProductSelectionModal } from '@/components/product/Product
 import { IDocCategory, IDocProduct } from '@/types/database'
 import { useRouter } from 'next/navigation'
 import { mutate } from 'swr'
+import { MessageInstance } from 'antd/es/message/interface'
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 
 type FieldType = {
   title: string
   display: boolean
-  products: {
-    productId: string
-    productName: string
-  }[]
+}
+
+export interface ISiteSettingCateogriesEditService {
+  save: (
+    setActionLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    formValues: FieldType,
+    messageApi: MessageInstance,
+    router: AppRouterInstance,
+  ) => void
+  delete?: (
+    setActionLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    messageApi: MessageInstance,
+  ) => void
+  addProducts?: (messageApi: MessageInstance) => void
+  removeProducts?: (messageApi: MessageInstance) => void
 }
 
 export const SiteSettingCategoriesEdit: React.FC<{
   category?: IDocCategory
   isLoading?: boolean
-}> = ({ category, isLoading }) => {
+  service?: ISiteSettingCateogriesEditService
+}> = ({ category, isLoading, service }) => {
   const [form] = Form.useForm<FieldType>()
   const [open, setOpen] = useState<boolean>(false)
   const [dataSource, setDataSource] = useState<IDocProduct[]>([])
@@ -33,7 +47,6 @@ export const SiteSettingCategoriesEdit: React.FC<{
       form.setFieldsValue({
         title: category.title,
         display: category.display,
-        products: [],
       })
     }
   }, [category, form])
@@ -55,33 +68,10 @@ export const SiteSettingCategoriesEdit: React.FC<{
           {
             title: '',
             display: true,
-            products: [],
           } as FieldType
         }
         onFinish={(v) => {
-          setActionLoading(true)
-          fetch('/api/categories', {
-            method: 'POST',
-            body: JSON.stringify({
-              title: v.title,
-              display: v.display,
-              sort: 0,
-              createTime: new Date(),
-              updateTime: new Date(),
-              productIds: [],
-            } as IDocCategory),
-          })
-            .then(async () => {
-              await mutate('/api/categories')
-              messageApi.success('成功, 返回列表...')
-              setTimeout(() => {
-                router.push('/site-settings/categories')
-              }, 1000)
-            })
-            .catch(() => {
-              setActionLoading(false)
-              messageApi.error('失敗')
-            })
+          service?.save(setActionLoading, v, messageApi, router)
         }}
       >
         <Form.Item<FieldType> label="名稱" name="title">
