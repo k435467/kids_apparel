@@ -4,7 +4,6 @@ import { Button, Form, Input, message, Spin, Switch, Divider, Popconfirm } from 
 import { ProductList, ProductSelectionModal } from '@/components/product/ProductSelectionModal'
 import { IDocCategory, IDocProduct } from '@/types/database'
 import { useRouter } from 'next/navigation'
-import { mutate } from 'swr'
 import { MessageInstance } from 'antd/es/message/interface'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 
@@ -23,6 +22,7 @@ export interface ISiteSettingCateogriesEditService {
   delete?: (
     setActionLoading: React.Dispatch<React.SetStateAction<boolean>>,
     messageApi: MessageInstance,
+    router: AppRouterInstance,
   ) => void
   addProducts?: (messageApi: MessageInstance) => void
   removeProducts?: (messageApi: MessageInstance) => void
@@ -91,20 +91,7 @@ export const SiteSettingCategoriesEdit: React.FC<{
               showCancel={false}
               placement="left"
               onConfirm={() => {
-                setActionLoading(true)
-                fetch(`/api/categories/${category._id}`, {
-                  method: 'DELETE',
-                })
-                  .then(async () => {
-                    await mutate('/api/categories')
-                    messageApi.success('成功, 返回列表...')
-                    setTimeout(() => {
-                      router.push('/site-settings/categories')
-                    }, 1000)
-                  })
-                  .catch(() => {
-                    setActionLoading(false)
-                  })
+                service?.delete?.(setActionLoading, messageApi, router)
               }}
             >
               <Button danger loading={actionLoading}>

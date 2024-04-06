@@ -42,6 +42,26 @@ export default function SiteSettingCategoryEditPage({
           }
         })
     },
+    delete: (setActionLoading, messageApi, router) => {
+      setActionLoading(true)
+      fetch(`/api/categories/${params.categoryId}`, {
+        method: 'DELETE',
+      })
+        .then(async () => {
+          await mutate('/api/categories')
+          messageApi.success('成功, 返回列表...')
+          setTimeout(() => {
+            router.push('/site-settings/categories')
+          }, 1000)
+        })
+        .catch((err) => {
+          setActionLoading(false)
+          messageApi.error('失敗')
+          if (err instanceof Error) {
+            messageApi.error(err.message)
+          }
+        })
+    },
   }
 
   return <SiteSettingCategoriesEdit category={data} isLoading={isLoading} service={service} />
