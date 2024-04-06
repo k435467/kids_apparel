@@ -84,6 +84,29 @@ export default function SiteSettingCategoryEditPage({
             messageApi.error(err.message)
           }
         }),
+    removeProducts: (messageApi, products) => {
+      return fetch(`/api/categories/${params.categoryId}/products`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          isRemove: true,
+          productIds: products.map((x) => x._id),
+        }),
+      })
+        .then(() => {
+          messageApi.success('成功')
+          mutate(
+            (key) =>
+              typeof key === 'string' &&
+              key.startsWith(`/api/categories/${params.categoryId}/products`),
+          )
+        })
+        .catch((err) => {
+          messageApi.error('失敗')
+          if (err instanceof Error) {
+            messageApi.error(err.message)
+          }
+        })
+    },
   }
 
   return <SiteSettingCategoriesEdit category={data} isLoading={isLoading} service={service} />

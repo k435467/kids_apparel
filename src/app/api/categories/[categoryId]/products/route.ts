@@ -5,29 +5,106 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/utils/auth'
 import { accessChecker } from '@/utils/access'
 import { mdb } from '@/utils/database/collections'
+import { IDocCategory, IDocProduct } from '@/types/database'
+import { makeGetProductsCondition } from '@/utils/product'
+
+export interface IGetCategoryProductsResponse {
+  total: number
+  data: IDocProduct[]
+}
 
 export async function GET(req: NextRequest, { params }: { params: { categoryId: string } }) {
-  const categoryId = params.categoryId
-
   try {
+    const condition = makeGetProductsCondition(req.nextUrl.searchParams)
+    if (condition.page < 1 || condition.size > 30) {
+      throw new Error('Filter is invalid.')
+    }
+
     const client = await clientPromise
-    const db = client.db('kids-apparel')
+    const coll = client.db(mdb.dbName).collection<IDocCategory>(mdb.coll.categories)
 
-    const oId = new ObjectId(categoryId)
-
-    const cursor = db.collection('products').find(
-      { categoryId: oId, isOnShelf: true },
+    const pipelines = [
       {
-        sort: {
-          _id: 1,
+        $match: {
+          _id: new ObjectId(params.categoryId),
         },
-        limit: 10,
       },
-    )
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'productIds',
+          foreignField: '_id',
+          as: 'products',
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          products: 1,
+        },
+      },
+      {
+        $unwind: {
+          path: '$products',
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: '$products',
+        },
+      },
+      // Here got product documents
+      ...(condition.name || condition.startTime || condition.endTime
+        ? [
+            {
+              $match: {
+                ...(condition.name && {
+                  name: {
+                    $regex: new RegExp(condition.name),
+                  },
+                }),
+                ...((condition.startTime || condition.endTime) && {
+                  createTime: {
+                    ...(condition.startTime && { $gte: new Date(condition.startTime) }),
+                    ...(condition.endTime && { $lte: new Date(condition.endTime) }),
+                  },
+                }),
+              },
+            },
+          ]
+        : []),
+    ]
 
-    const products = await cursor.toArray()
+    const totalAggregateResult = (await coll
+      .aggregate([
+        ...pipelines,
+        {
+          $count: 'total',
+        },
+      ])
+      .toArray()) as { total: number }[]
 
-    return Response.json(products)
+    const data = await coll
+      .aggregate([
+        ...pipelines,
+        {
+          $sort: {
+            [condition.sort]: condition.asc,
+          },
+        },
+        {
+          $limit: condition.size,
+        },
+        {
+          $skip: condition.size * (condition.page - 1),
+        },
+      ])
+      .toArray()
+
+    return Response.json({
+      data,
+      total: totalAggregateResult[0]?.total ?? 0,
+    } as IGetCategoryProductsResponse)
   } catch (err) {
     console.error(err)
     return Response.error()

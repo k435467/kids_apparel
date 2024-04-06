@@ -6,6 +6,7 @@ import { NextRequest } from 'next/server'
 import { Filter, ObjectId } from 'mongodb'
 import { mdb } from '@/utils/database/collections'
 import { IDocProduct } from '@/types/database'
+import { makeGetProductsCondition } from '@/utils/product'
 
 export interface IGetProductsCondition {
   name?: string
@@ -24,17 +25,7 @@ export interface IGetProductsRes {
 
 export async function GET(req: NextRequest) {
   try {
-    const search = req.nextUrl.searchParams
-    const condition: Required<Omit<IGetProductsCondition, 'name' | 'startTime' | 'endTime'>> &
-      Pick<IGetProductsCondition, 'name' | 'startTime' | 'endTime'> = {
-      name: search.get('name') ?? undefined,
-      startTime: search.get('startTime') ?? undefined,
-      endTime: search.get('endTime') ?? undefined,
-      page: parseInt(search.get('page') ?? '1'),
-      size: parseInt(search.get('size') ?? '10'),
-      sort: search.get('sort') ?? '_id',
-      asc: parseInt(search.get('asc') ?? '-1') as 1 | -1,
-    }
+    const condition = makeGetProductsCondition(req.nextUrl.searchParams)
 
     if (condition.page < 1 || condition.size > 30) {
       throw new Error('Filter is invalid.')
@@ -56,8 +47,6 @@ export async function GET(req: NextRequest) {
         },
       }),
     }
-
-    console.log(filter)
 
     const products = await productsColl
       .find(filter)

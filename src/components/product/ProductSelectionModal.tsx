@@ -57,7 +57,7 @@ const ascSelectOptions = [
   },
 ]
 
-const SearchForm: React.FC<{ onFinish: (values: FieldType) => void }> = ({ onFinish }) => {
+export const SearchForm: React.FC<{ onFinish: (values: FieldType) => void }> = ({ onFinish }) => {
   return (
     <ConfigProvider
       theme={{
@@ -160,7 +160,10 @@ export const ProductSelectionModal: React.FC<{
   onCancel: () => void
   onFinish: (v: IDocProduct[]) => Promise<any>
 }> = ({ open, onCancel, onFinish }) => {
-  const [condition, setCondition] = useState<IGetProductsCondition>({})
+  const [condition, setCondition] = useState<IGetProductsCondition>({
+    page: 1,
+    size: 10,
+  })
   const { data, isLoading } = useProducts(condition)
   const [selectedProducts, setSelectedProducts] = useState<IDocProduct[]>([])
   const [actionLoading, setActionLoading] = useState<boolean>(false)
@@ -198,8 +201,8 @@ export const ProductSelectionModal: React.FC<{
         loading={isLoading}
         pagination={{
           total: data?.total,
-          current: condition.page ?? 1,
-          pageSize: condition.size ?? 10,
+          current: condition.page,
+          pageSize: condition.size,
           onChange: (page, pageSize) => {
             setCondition((v) => ({
               ...v,
