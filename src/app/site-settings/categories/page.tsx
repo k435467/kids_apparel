@@ -40,6 +40,9 @@ export default function SiteSettingCategories({}: {}) {
               <div className="text-xs font-light text-neutral-400">
                 {v.display ? '顯示' : '不顯示'}
               </div>
+              <div className="text-xs font-light text-neutral-400">
+                商品數:{v.productIds.length}
+              </div>
             </div>
           ))}
         </div>
