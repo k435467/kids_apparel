@@ -1,8 +1,8 @@
 'use client'
 import {
   ISiteSettingCateogriesEditService,
-  SiteSettingCategoriesEdit,
-} from '@/components/category/setting'
+  CategoryEditor,
+} from '@/components/category/CategoryEditor'
 import { useCategory } from '@/networks/categories'
 import { IDocCategory } from '@/types/database'
 import { mutate } from 'swr'
@@ -109,5 +109,5 @@ export default function SiteSettingCategoryEditPage({
     },
   }
 
-  return <SiteSettingCategoriesEdit category={data} isLoading={isLoading} service={service} />
+  return <CategoryEditor category={data} isLoading={isLoading} service={service} />
 }

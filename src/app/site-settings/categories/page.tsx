@@ -3,16 +3,17 @@ import React from 'react'
 import { useCategories } from '@/networks/categories'
 import { Button, Empty, Spin } from 'antd'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { CategoryDndList } from '@/components/category/CategoryDndList'
 
 export default function SiteSettingCategories({}: {}) {
   const { data: categories, isLoading } = useCategories()
-  const router = useRouter()
 
   return (
     <div className="m-4">
       <Link href="/site-settings/categories/create">
-        <Button type="primary">新增</Button>
+        <Button className="mb-4" type="primary">
+          新增
+        </Button>
       </Link>
 
       {isLoading && (
@@ -27,26 +28,25 @@ export default function SiteSettingCategories({}: {}) {
         </div>
       )}
 
-      {categories && categories.length > 0 && (
-        <div className="mt-8 flex flex-col gap-8">
-          {categories.map((v) => (
-            <div
-              key={v._id as string}
-              onClick={() => {
-                router.push(`/site-settings/categories/${v._id}`)
-              }}
-            >
-              <div>{v.title}</div>
-              <div className="text-xs font-light text-neutral-400">
-                {v.display ? '顯示' : '不顯示'}
-              </div>
-              <div className="text-xs font-light text-neutral-400">
-                商品數:{v.productIds.length}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      {categories && categories.length > 0 && <CategoryDndList categories={categories} />}
+
+      {/*{categories && categories.length > 0 && (*/}
+      {/*  <div className="mt-8 flex flex-col gap-8">*/}
+      {/*    {categories.map((v) => (*/}
+      {/*      <div*/}
+      {/*        key={v._id as string}*/}
+      {/*        onClick={() => {*/}
+      {/*          router.push(`/site-settings/categories/${v._id}`)*/}
+      {/*        }}*/}
+      {/*      >*/}
+      {/*        <div>{v.title}</div>*/}
+      {/*        <div className="mt-2 text-xs font-light text-neutral-400">*/}
+      {/*          {`${v.display ? '顯示' : '不顯示'}, ${v.productIds.length}個商品`}*/}
+      {/*        </div>*/}
+      {/*      </div>*/}
+      {/*    ))}*/}
+      {/*  </div>*/}
+      {/*)}*/}
     </div>
   )
 }

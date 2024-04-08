@@ -137,7 +137,7 @@ export interface ISiteSettingCateogriesEditService {
   removeProducts?: (messageApi: MessageInstance, products: IDocProduct[]) => Promise<any>
 }
 
-export const SiteSettingCategoriesEdit: React.FC<{
+export const CategoryEditor: React.FC<{
   category?: IDocCategory
   isLoading?: boolean
   service?: ISiteSettingCateogriesEditService
