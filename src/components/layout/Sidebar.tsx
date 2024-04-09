@@ -76,11 +76,13 @@ const useMenuItems = (): MenuProps['items'] => {
               label: '載入中...',
             },
           ]
-        : categories?.map((v) => ({
-            key: v._id as string,
-            label: v.title,
-            onClick: () => router.push(`/categories/${v._id}/products`),
-          })),
+        : categories
+            ?.filter((v) => v.display)
+            ?.map((v) => ({
+              key: v._id as string,
+              label: v.title,
+              onClick: () => router.push(`/categories/${v._id}/products`),
+            })),
     },
     ...(session?.user
       ? [
