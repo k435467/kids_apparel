@@ -15,7 +15,7 @@ export async function GET() {
     const categories = await db
       .collection<IDocCategory>(mdb.coll.categories)
       .find({})
-      .sort({ order: 1 })
+      .sort({ sort: 1 })
       .limit(10)
       .toArray()
 
@@ -46,27 +46,25 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function PUT(req: NextRequest) {
+export async function PATCH(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!accessChecker.hasManagerAccess(session?.user?.role)) {
     return Response.json({ message: accessChecker.message.forbidden }, { status: 403 })
   }
 
   try {
-    const categories = (await req.json()) as ICategory[]
-
     const client = await clientPromise
-    const db = client.db('kids-apparel')
+    const coll = client.db(mdb.dbName).collection<IDocCategory>(mdb.coll.categories)
 
-    const bulkWriteResult = await db.collection('categories').bulkWrite(
-      categories.map((v) => ({
+    const categorySorts = (await req.json()) as { _id: string; sort: number }[]
+
+    const bulkWriteResult = await coll.bulkWrite(
+      categorySorts.map((v) => ({
         updateOne: {
           filter: { _id: new ObjectId(v._id!) },
           update: {
             $set: {
-              isOnShelf: v.isOnShelf,
-              title: v.title,
-              order: v.order,
+              sort: v.sort,
             },
           },
         },

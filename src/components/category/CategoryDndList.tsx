@@ -11,14 +11,10 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { IDocCategory } from '@/types/database'
 import { useRouter } from 'next/navigation'
-import {
-  arrayMove,
-  rectSortingStrategy,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-} from '@dnd-kit/sortable'
+import { arrayMove, rectSortingStrategy, SortableContext, useSortable } from '@dnd-kit/sortable'
 import { PauseOutlined } from '@ant-design/icons'
+import { mutate } from 'swr'
+import { message } from 'antd'
 
 const SortableItem: React.FC<{ id: string; category: IDocCategory }> = ({ category, id }) => {
   const router = useRouter()
@@ -53,6 +49,7 @@ const SortableItem: React.FC<{ id: string; category: IDocCategory }> = ({ catego
 }
 
 export const CategoryDndList: React.FC<{ categories: IDocCategory[] }> = ({ categories }) => {
+  const [messageApi, contextHolder] = message.useMessage()
   const [items, setItems] = useState<IDocCategory[]>([])
 
   useEffect(() => {
@@ -65,22 +62,44 @@ export const CategoryDndList: React.FC<{ categories: IDocCategory[] }> = ({ cate
         distance: 8, // For sortable item clicks to work
       },
     }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
   )
+
+  const patchCategorySorts = (newItems: IDocCategory[]) =>
+    fetch('/api/categories', {
+      method: 'PATCH',
+      body: JSON.stringify(
+        newItems.map((v, index) => ({
+          _id: v._id,
+          sort: index + 1,
+        })),
+      ),
+    })
+      .then(() => {
+        messageApi.success('成功')
+      })
+      .catch(() => {
+        messageApi.error('失敗')
+      })
 
   const handleDragEnd = (e: DragEndEvent) => {
     const { active, over } = e
     if (over?.id && active.id !== over.id) {
       const oldIndex = items.findIndex((v) => v._id === active.id)
       const newIndex = items.findIndex((v) => v._id === over.id)
-      setItems(arrayMove(items, oldIndex, newIndex))
+      const newItems = arrayMove(items, oldIndex, newIndex)
+      setItems(newItems)
+      mutate('/api/categories', patchCategorySorts(newItems), {
+        optimisticData: newItems,
+        revalidate: false,
+        populateCache: false,
+        throwOnError: false,
+      })
     }
   }
 
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      {contextHolder}
       <SortableContext
         items={items.map((v) => ({
           id: v._id as string,
