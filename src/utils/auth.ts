@@ -58,7 +58,7 @@ const credentialsProviderConfigs = CredentialsProvider({
 export const authOptions: AuthOptions = {
   adapter: MongoDBAdapter(clientPromise),
   providers: [credentialsProviderConfigs],
-  debug: true, // TODO - disable debug on production
+  debug: false,
   session: {
     strategy: 'jwt',
   },
