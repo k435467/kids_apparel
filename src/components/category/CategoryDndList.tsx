@@ -18,10 +18,12 @@ import {
   sortableKeyboardCoordinates,
   useSortable,
 } from '@dnd-kit/sortable'
+import { PauseOutlined } from '@ant-design/icons'
 
 const SortableItem: React.FC<{ id: string; category: IDocCategory }> = ({ category, id }) => {
   const router = useRouter()
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: id })
+  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition } =
+    useSortable({ id: id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -29,16 +31,21 @@ const SortableItem: React.FC<{ id: string; category: IDocCategory }> = ({ catego
   }
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div ref={setNodeRef} style={style} {...attributes}>
       <div
-        className="touch-none py-4"
+        className="flex touch-none py-4"
         onClick={() => {
           router.push(`/site-settings/categories/${category._id}`)
         }}
       >
-        <div>{category.title}</div>
-        <div className="mt-2 text-xs font-light text-neutral-400">
-          {`${category.display ? '顯示' : '不顯示'}, ${category.productIds.length}個商品`}
+        <div className="grow">
+          <div>{category.title}</div>
+          <div className="mt-2 text-xs font-light text-neutral-400">
+            {`${category.display ? '顯示' : '不顯示'}, ${category.productIds.length}個商品`}
+          </div>
+        </div>
+        <div className="flex items-center px-2" ref={setActivatorNodeRef} {...listeners}>
+          <PauseOutlined rotate={90} style={{ color: 'rgba(0,0,0,.5)' }} />
         </div>
       </div>
     </div>
