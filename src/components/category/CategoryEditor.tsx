@@ -62,14 +62,8 @@ const ProductSection: React.FC<{
         }}
       >
         <SearchForm
+          setCondition={setCondition}
           onFinish={(v) => {
-            setCondition({
-              ...condition,
-              ...v,
-              name: v.title && v.title.length > 0 ? v.title : undefined,
-              startTime: formatDayjsToUTCDayStart(v.startTime),
-              endTime: formatDayjsToUTCDayEnd(v.endTime),
-            })
             setOpenCondition(false)
           }}
         />

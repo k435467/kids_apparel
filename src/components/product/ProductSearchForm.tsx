@@ -2,6 +2,8 @@
 import React from 'react'
 import { Button, DatePicker, Form, Input, ConfigProvider, Select } from 'antd'
 import { Dayjs } from 'dayjs'
+import { IGetProductsCondition } from '@/app/api/products/route'
+import { formatDayjsToUTCDayEnd, formatDayjsToUTCDayStart } from '@/utils/format'
 
 type FieldType = {
   title?: string
@@ -41,7 +43,14 @@ const ascSelectOptions = [
   },
 ]
 
-export const SearchForm: React.FC<{ onFinish: (values: FieldType) => void }> = ({ onFinish }) => {
+/**
+ * @param setCondition Called in Form.onFinish.
+ * @param onFinish Additional callback to run.
+ */
+export const SearchForm: React.FC<{
+  setCondition: React.Dispatch<React.SetStateAction<IGetProductsCondition>>
+  onFinish?: (values: FieldType) => void
+}> = ({ setCondition, onFinish }) => {
   return (
     <ConfigProvider
       theme={{
@@ -54,7 +63,16 @@ export const SearchForm: React.FC<{ onFinish: (values: FieldType) => void }> = (
     >
       <Form
         size="small"
-        onFinish={onFinish}
+        onFinish={(v) => {
+          setCondition((oldValues) => ({
+            ...oldValues,
+            ...v,
+            name: v.title && v.title.length > 0 ? v.title : undefined,
+            startTime: formatDayjsToUTCDayStart(v.startTime),
+            endTime: formatDayjsToUTCDayEnd(v.endTime),
+          }))
+          onFinish?.(v)
+        }}
         initialValues={{
           sort: '_id',
           asc: -1,

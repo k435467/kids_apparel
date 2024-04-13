@@ -38,17 +38,7 @@ export const ProductSelectionModal: React.FC<{
         setSelectedProducts([])
       }}
     >
-      <SearchForm
-        onFinish={(v) => {
-          setCondition({
-            ...condition,
-            ...v,
-            name: v.title && v.title.length > 0 ? v.title : undefined,
-            startTime: formatDayjsToUTCDayStart(v.startTime),
-            endTime: formatDayjsToUTCDayEnd(v.endTime),
-          })
-        }}
-      />
+      <SearchForm setCondition={setCondition} />
       <ProductList
         dataSource={data?.data}
         loading={isLoading}
