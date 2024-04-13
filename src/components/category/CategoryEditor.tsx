@@ -1,11 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { Button, Divider, Form, Input, message, Modal, Popconfirm, Spin, Switch } from 'antd'
-import {
-  ProductList,
-  ProductSelectionModal,
-  SearchForm,
-} from '@/components/product/ProductSelectionModal'
+import { ProductSelectionModal } from '@/components/product/ProductSelectionModal'
 import { IDocCategory, IDocProduct } from '@/types/database'
 import { useRouter } from 'next/navigation'
 import { MessageInstance } from 'antd/es/message/interface'
@@ -13,6 +9,8 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
 import { useCategoryProducts } from '@/networks/categories'
 import { IGetProductsCondition } from '@/app/api/products/route'
 import { formatDayjsToUTCDayEnd, formatDayjsToUTCDayStart } from '@/utils/format'
+import { SearchForm } from '@/components/product/ProductSearchForm'
+import { ProductList } from '@/components/product/ProductList'
 
 const ProductSection: React.FC<{
   addProducts: (v: IDocProduct[]) => Promise<any>
