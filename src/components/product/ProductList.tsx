@@ -10,7 +10,7 @@ export const ProductList: React.FC<{
   dataSource?: IDocProduct[]
   loading?: boolean
   pagination: ListProps<any>['pagination']
-  selectedProducts: IDocProduct[]
+  selectedProducts?: IDocProduct[]
   onClickProduct: (selectedProduct: IDocProduct) => void
 }> = ({ dataSource, loading, pagination, selectedProducts, onClickProduct }) => {
   return (
@@ -24,7 +24,7 @@ export const ProductList: React.FC<{
       }}
       rowKey={(v) => v._id as string}
       renderItem={(item, index) => {
-        const isSelected = Boolean(selectedProducts.find((v) => v._id === item._id))
+        const isSelected = Boolean(selectedProducts?.find((v) => v._id === item._id))
         return (
           <List.Item onClick={() => onClickProduct(item)}>
             <List.Item.Meta
