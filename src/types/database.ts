@@ -56,10 +56,16 @@ export interface IDocProduct {
     min: number
     max: number
   }
-  specs: {
-    specId: string
-    price: number
-    spec: string
+  basePrice: number
+  colors: {
+    id: string
+    name: string
+    priceAdjust: number
+  }[]
+  sizes: {
+    id: string
+    name: string
+    priceAdjust: number
   }[]
   updateTime: Date | string
 }
