@@ -1,271 +1,190 @@
 'use client'
-import {
-  Button,
-  Form,
-  Input,
-  message,
-  Select,
-  Switch,
-  Typography,
-  InputNumber,
-  FormInstance,
-} from 'antd'
+import React from 'react'
+import { Button, Form, Input, Switch, Typography, InputNumber, FormInstance, message } from 'antd'
+import { ProductImageUploader } from '@/components/product/ProductImageUploader'
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
+import { v4 as uuidv4 } from 'uuid'
+import { accessChecker } from '@/utils/access'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
-export interface IProductEditorProps {
-  form: FormInstance<any>
-  formSubmitRequest: (values: any, imgNames: string[]) => Promise<any>
-  initImgNames: string[]
+export type FieldType = {
+  coverImageName: string
+  imageNames: string[]
+  name: string
+  description: string
+  descriptionList: string[]
+  basePrice: number
+  colors: {
+    id: string
+    name: string
+    priceAdjust?: number
+  }[]
+  sizes: {
+    id: string
+    name: string
+    priceAdjust?: number
+  }[]
+  display: boolean
 }
 
-// const ProductEditor: React.FC<IProductEditorProps> = ({
-//   form,
-//   formSubmitRequest,
-//   initImgNames,
-// }) => {
-//   const session = useSession()
-//   const router = useRouter()
-//
-//   const fileInputRef = useRef<HTMLInputElement>(null)
-//   const [filesUploading, setFilesUploading] = useState<string[]>([])
-//   const [filesUploaded, setFilesUploaded] = useState<string[]>([])
-//
-//   const [messageApi, contextHolder] = message.useMessage()
-//
-//   const handleUploadImage = () => {
-//     const files = fileInputRef.current?.files
-//     if (!files || files.length === 0) return
-//
-//     const fileNames = getFileNames(files)
-//     console.log(fileNames)
-//     setFilesUploading((v) => [...v, ...fileNames])
-//
-//     uploadFilesToBlob(files)
-//       .then((fileNames) => {
-//         setFilesUploading((v) => v.filter((x) => !fileNames.includes(x)))
-//         setFilesUploaded((v) => [...v, ...fileNames])
-//         messageApi.success(`成功上傳${fileNames.length}張圖片`)
-//       })
-//       .catch((err) => {
-//         setFilesUploading((v) => v.filter((x) => !fileNames.includes(x)))
-//         messageApi.success(`上傳${fileNames.length}張圖片失敗`)
-//       })
-//       .finally(() => {
-//         // clear files preventing upload the files again next time
-//         if (fileInputRef.current) {
-//           fileInputRef.current.value = ''
-//         }
-//       })
-//   }
-//
-//   const handleDragEnd = (result: DropResult) => {
-//     if (!result.destination) return
-//
-//     const items = [...filesUploaded]
-//     const [reorderedItem] = items.splice(result.source.index, 1)
-//     items.splice(result.destination.index, 0, reorderedItem)
-//
-//     setFilesUploaded(items)
-//   }
-//
-//   const { data: categories } = useCategories()
-//
-//   useEffect(() => {
-//     setFilesUploaded(initImgNames)
-//   }, [initImgNames])
-//
-//   return (
-//     <div className="container mx-auto p-2">
-//       {contextHolder}
-//       <div className="my-2">
-//         <input
-//           hidden
-//           ref={fileInputRef}
-//           type="file"
-//           multiple
-//           accept="image/jpeg, image/png, image/webp"
-//           onChange={handleUploadImage}
-//         />
-//         <Button icon={<UploadOutlined />} onClick={() => fileInputRef.current?.click()}>
-//           上傳商品圖片
-//         </Button>
-//
-//         <DragDropContext onDragEnd={handleDragEnd}>
-//           <Droppable droppableId="files-uploaded">
-//             {(provided) => (
-//               <div {...provided.droppableProps} ref={provided.innerRef}>
-//                 {filesUploaded.map((fileName, index) => (
-//                   <Draggable key={fileName} draggableId={fileName} index={index}>
-//                     {(provided) => (
-//                       <div
-//                         ref={provided.innerRef}
-//                         {...provided.draggableProps}
-//                         {...provided.dragHandleProps}
-//                       >
-//                         <UploadListItem fileName={fileName} onDelete={() => {}} type="done" />
-//                       </div>
-//                     )}
-//                   </Draggable>
-//                 ))}
-//                 {provided.placeholder}
-//               </div>
-//             )}
-//           </Droppable>
-//         </DragDropContext>
-//         <div>
-//           {filesUploading.map((fileName) => {
-//             return (
-//               <UploadListItem
-//                 fileName={fileName}
-//                 type="uploading"
-//                 key={fileName}
-//                 onDelete={() => {}}
-//               />
-//             )
-//           })}
-//         </div>
-//       </div>
-//       <Form
-//         name="create-category"
-//         layout="vertical"
-//         onFinish={(values) => {
-//           formSubmitRequest(values, filesUploaded)
-//             .then((res) => {
-//               messageApi.success('成功')
-//               setTimeout(() => {
-//                 router.push('/site-settings/products')
-//               }, 2000)
-//             })
-//             .catch((err) => {
-//               console.error(err)
-//               messageApi.error('失敗')
-//             })
-//         }}
-//         onFinishFailed={() => {}}
-//         autoComplete="off"
-//         form={form}
-//       >
-//         <Form.Item
-//           label="商品名稱"
-//           name="name"
-//           rules={[{ required: true, message: 'Please input the name!' }]}
-//         >
-//           <Input />
-//         </Form.Item>
-//         <Form.Item name="categoryId" label="分類" rules={[{ required: true }]}>
-//           <Select>
-//             {categories?.map((category) => (
-//               <Select.Option key={category._id} value={category._id}>
-//                 {category.title}
-//               </Select.Option>
-//             ))}
-//           </Select>
-//         </Form.Item>
-//         <Form.Item name="description" label="描述">
-//           <Input.TextArea rows={4} />
-//         </Form.Item>
-//         <Form.Item label="描述清單">
-//           <Form.List name="descriptionList">
-//             {(fields, { add, remove }) => {
-//               return (
-//                 <>
-//                   {fields.map((field, index) => {
-//                     return (
-//                       <div key={field.key} className="flex">
-//                         <Form.Item name={[field.name]} className="grow">
-//                           <Input />
-//                         </Form.Item>
-//                         <Button
-//                           onClick={() => remove(index)}
-//                           icon={<DeleteOutlined />}
-//                           type="text"
-//                           size="small"
-//                           className="ml-2 mt-1"
-//                         />
-//                       </div>
-//                     )
-//                   })}
-//                   <Form.Item>
-//                     <Button type="dashed" onClick={() => add('')} block icon={<PlusOutlined />}>
-//                       增加
-//                     </Button>
-//                   </Form.Item>
-//                 </>
-//               )
-//             }}
-//           </Form.List>
-//         </Form.Item>
-//         <Form.Item label="尺寸">
-//           <Form.List name="sizes">
-//             {(fields, { add, remove }) => {
-//               return (
-//                 <>
-//                   {fields.map((field, index) => {
-//                     return (
-//                       <div key={field.key} className="flex">
-//                         <Form.Item name={[field.name, 'size']} className="grow">
-//                           <Input placeholder="尺寸" />
-//                         </Form.Item>
-//                         <Form.Item name={[field.name, 'price']}>
-//                           <InputNumber placeholder="售價" />
-//                         </Form.Item>
-//                         <Button
-//                           onClick={() => remove(index)}
-//                           icon={<DeleteOutlined />}
-//                           type="text"
-//                           size="small"
-//                           className="ml-2 mt-1"
-//                         />
-//                       </div>
-//                     )
-//                   })}
-//                   <Form.Item>
-//                     <Button
-//                       type="dashed"
-//                       onClick={() =>
-//                         add({
-//                           size: '',
-//                           stock: null,
-//                           price: null,
-//                         })
-//                       }
-//                       block
-//                       icon={<PlusOutlined />}
-//                     >
-//                       增加
-//                     </Button>
-//                   </Form.Item>
-//                 </>
-//               )
-//             }}
-//           </Form.List>
-//         </Form.Item>
-//         <Form.Item name="isOnShelf" label="上架" valuePropName="checked" initialValue={true}>
-//           <Switch />
-//         </Form.Item>
-//         <Form.Item
-//           name="isOnHomePage"
-//           label="顯示在首頁"
-//           valuePropName="checked"
-//           initialValue={true}
-//         >
-//           <Switch />
-//         </Form.Item>
-//         <Form.Item>
-//           <Button type="primary" htmlType="submit">
-//             儲存
-//           </Button>
-//         </Form.Item>
-//
-//         {accessChecker.hasAdminAccess(session.data?.user?.role) && (
-//           <Form.Item noStyle shouldUpdate>
-//             {() => (
-//               <Typography>
-//                 <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>
-//               </Typography>
-//             )}
-//           </Form.Item>
-//         )}
-//       </Form>
-//     </div>
-//   )
-// }
+const FormListForDescriptionList: React.FC<{ name: string; label: string }> = ({ name, label }) => {
+  return (
+    <Form.List name={name}>
+      {(fields, operation) => (
+        <>
+          {fields.map((field, index) => (
+            <div key={field.key} className="flex items-end gap-4">
+              <Form.Item className="grow" label={index === 0 ? label : ''} name={field.name}>
+                <Input />
+              </Form.Item>
+              <MinusCircleOutlined
+                className="mb-8 !text-neutral-400"
+                onClick={() => operation.remove(index)}
+              />
+            </div>
+          ))}
+          <Button
+            type="dashed"
+            onClick={() => operation.add()}
+            icon={<PlusOutlined />}
+            className="mb-6"
+          >
+            新增
+          </Button>
+        </>
+      )}
+    </Form.List>
+  )
+}
+
+// -----
+
+const FormListForColorsAndSizes: React.FC<{ name: string; label: string }> = ({ name, label }) => {
+  return (
+    <Form.List name={name}>
+      {(fields, operation) => (
+        <>
+          {fields.map((field, index) => (
+            <div className="flex items-end gap-2" key={field.key}>
+              <Form.Item
+                name={[field.name, 'name']}
+                label={index === 0 ? label : ''}
+                className="grow"
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item name={[field.name, 'priceAdjust']} label={index === 0 ? '價格調整' : ''}>
+                <InputNumber />
+              </Form.Item>
+              <MinusCircleOutlined
+                className="mb-8 !text-neutral-400"
+                onClick={() => operation.remove(index)}
+              />
+            </div>
+          ))}
+          <Button
+            type="dashed"
+            onClick={() =>
+              operation.add({
+                id: uuidv4(),
+                name: '',
+              })
+            }
+            icon={<PlusOutlined />}
+            className="mb-6"
+          >
+            新增
+          </Button>
+        </>
+      )}
+    </Form.List>
+  )
+}
+
+// -----
+
+const formInitValues: Partial<FieldType> = {
+  descriptionList: [''],
+  colors: [
+    {
+      id: uuidv4(),
+      name: '',
+    },
+  ],
+  sizes: [
+    {
+      id: uuidv4(),
+      name: '',
+    },
+  ],
+}
+
+export interface IProductEditorProps {
+  form: FormInstance<FieldType>
+  formSubmitRequest: (values: FieldType) => Promise<any>
+}
+
+export const ProductEditor: React.FC<IProductEditorProps> = ({ form, formSubmitRequest }) => {
+  const session = useSession()
+  const router = useRouter()
+  const [messageApi, contextHolder] = message.useMessage()
+
+  const handleSubmit = (values: FieldType) => {
+    formSubmitRequest(values)
+      .then((res) => {
+        messageApi.success('成功')
+        setTimeout(() => {
+          router.push('/site-settings/products')
+        }, 1000)
+      })
+      .catch((err) => {
+        messageApi.error('失敗')
+        if (err instanceof Error) {
+          messageApi.error(err.message)
+        }
+      })
+  }
+
+  return (
+    <div className="m-4">
+      {contextHolder}
+      <Form form={form} initialValues={formInitValues} layout="vertical" onFinish={handleSubmit}>
+        <Form.Item<FieldType> name="coverImageName" label="封面圖">
+          <ProductImageUploader mode="single" />
+        </Form.Item>
+        <Form.Item<FieldType> name="imageNames" label="圖片">
+          <ProductImageUploader mode="multiple" />
+        </Form.Item>
+        <Form.Item<FieldType> name="name" label="名稱">
+          <Input />
+        </Form.Item>
+        <Form.Item<FieldType> name="description" label="描述">
+          <Input.TextArea />
+        </Form.Item>
+        <FormListForDescriptionList name="descriptionList" label="條列式描述" />
+        <Form.Item<FieldType> name="basePrice" label="基本價格">
+          <InputNumber />
+        </Form.Item>
+        <FormListForColorsAndSizes name="colors" label="顏色" />
+        <FormListForColorsAndSizes name="sizes" label="尺寸" />
+        <Form.Item<FieldType> name="display" label="上架">
+          <Switch />
+        </Form.Item>
+        <Button type="primary" className="mb-6 mt-4" htmlType="submit">
+          儲存
+        </Button>
+
+        {accessChecker.hasAdminAccess(session.data?.user?.role) && (
+          <Form.Item noStyle shouldUpdate>
+            {() => (
+              <Typography>
+                <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>
+              </Typography>
+            )}
+          </Form.Item>
+        )}
+      </Form>
+    </div>
+  )
+}

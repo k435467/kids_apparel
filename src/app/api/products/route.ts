@@ -3,10 +3,15 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/utils/auth'
 import { accessChecker } from '@/utils/access'
 import { NextRequest } from 'next/server'
-import { Filter, ObjectId } from 'mongodb'
+import { Filter } from 'mongodb'
 import { mdb } from '@/utils/database/collections'
 import { IDocProduct } from '@/types/database'
-import { makeGetProductsCondition } from '@/utils/product'
+import { FieldType as ProductEditorFieldType } from '@/components/product/ProductEditor'
+import {
+  makeColorsOrSizesDbValue,
+  makeGetProductsCondition,
+  makeProductPriceMinMax,
+} from '@/utils/product'
 
 export interface IGetProductsCondition {
   name?: string
@@ -31,8 +36,7 @@ export async function GET(req: NextRequest) {
       throw new Error('Filter is invalid.')
     }
 
-    const client = await clientPromise
-    const productsColl = client.db(mdb.dbName).collection<IDocProduct>(mdb.coll.products)
+    const coll = (await clientPromise).db(mdb.dbName).collection<IDocProduct>(mdb.coll.products)
 
     const filter: Filter<IDocProduct> = {
       ...(condition.name && {
@@ -48,43 +52,19 @@ export async function GET(req: NextRequest) {
       }),
     }
 
-    const products = await productsColl
+    const products = await coll
       .find(filter)
       .sort({ [condition.sort]: condition.asc })
       .limit(condition.size)
       .skip(condition.size * (condition.page - 1))
       .toArray()
 
-    const total = await productsColl.countDocuments(filter)
+    const total = await coll.countDocuments(filter)
 
     return Response.json({ total, data: products } as IGetProductsRes)
   } catch (err) {
     console.error(err)
     return Response.error()
-  }
-}
-
-export async function PUT(req: NextRequest) {
-  const session = await getServerSession(authOptions)
-  if (!accessChecker.hasManagerAccess(session?.user?.role)) {
-    return Response.json({ message: accessChecker.message.forbidden }, { status: 403 })
-  }
-  try {
-    const client = await clientPromise
-    const db = client.db('kids-apparel')
-
-    const product: IProduct = await req.json()
-    const prdObjId = new ObjectId(product._id)
-    const catObjId = new ObjectId(product.categoryId)
-
-    const updateResult = await db
-      .collection('products')
-      .replaceOne({ _id: prdObjId }, { ...product, _id: prdObjId, categoryId: catObjId })
-
-    return Response.json(updateResult)
-  } catch (err) {
-    console.error(err)
-    return Response.json(err, { status: 500 })
   }
 }
 
@@ -94,20 +74,24 @@ export async function POST(req: NextRequest) {
     return Response.json({ message: accessChecker.message.forbidden }, { status: 403 })
   }
   try {
-    const client = await clientPromise
-    const db = client.db('kids-apparel')
+    const coll = (await clientPromise).db(mdb.dbName).collection<IDocProduct>(mdb.coll.products)
 
-    const products = await req.json()
+    const prod = (await req.json()) as ProductEditorFieldType
 
-    const productsWithCategoryObjectId = products.map((product: IProduct) => ({
-      ...product,
-      categoryId:
-        typeof product.categoryId === 'string'
-          ? new ObjectId(product.categoryId)
-          : product.categoryId,
-    }))
-
-    const insertResult = await db.collection('products').insertMany(productsWithCategoryObjectId)
+    const insertResult = await coll.insertOne({
+      basePrice: prod.basePrice,
+      colors: makeColorsOrSizesDbValue(prod.colors),
+      coverImageName: prod.coverImageName,
+      createTime: new Date(),
+      description: prod.description,
+      descriptionList: prod.descriptionList,
+      display: prod.display,
+      imageNames: prod.imageNames,
+      name: prod.name,
+      price: makeProductPriceMinMax(prod.colors, prod.sizes, prod.basePrice),
+      sizes: makeColorsOrSizesDbValue(prod.sizes),
+      updateTime: new Date(),
+    })
 
     return Response.json(insertResult)
   } catch (err) {

@@ -1,23 +1,32 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-import ProductEditor from '@/components/product/ProductEditor'
-import { Button, Form } from 'antd'
-import { AccessChecker } from '@/components/AccessChecker'
+import React, { useEffect } from 'react'
+import { ProductEditor, FieldType } from '@/components/product/ProductEditor'
+import { Form } from 'antd'
+import { IDocProduct } from '@/types/database'
+import { mutate } from 'swr'
+import { makeInitOfColorsOrSizes } from '@/utils/product'
 
 export default function ProductDetailPage({ params }: { params: { productId: string } }) {
   const { productId } = params
 
-  const [form] = Form.useForm()
-  const [imgNames, setImgNames] = useState<string[]>([])
+  const [form] = Form.useForm<FieldType>()
 
   useEffect(() => {
     fetch(`/api/products/${productId}`)
       .then((res) => res.json())
-      .then((value: IProduct) => {
-        if (value) {
-          const { imgNames, _id, ...rest } = value
-          form.setFieldsValue(rest)
-          setImgNames(imgNames ?? [])
+      .then((v: IDocProduct) => {
+        if (v) {
+          form.setFieldsValue({
+            basePrice: v.basePrice,
+            colors: makeInitOfColorsOrSizes(v.colors),
+            coverImageName: v.coverImageName,
+            description: v.description,
+            descriptionList: v.descriptionList,
+            display: v.display,
+            imageNames: v.imageNames,
+            name: v.name,
+            sizes: makeInitOfColorsOrSizes(v.sizes),
+          })
         }
       })
   }, [productId])
@@ -27,13 +36,14 @@ export default function ProductDetailPage({ params }: { params: { productId: str
       {/* <AccessChecker level="manager" /> */}
       <ProductEditor
         form={form}
-        formSubmitRequest={(values, imgNames) => {
-          return fetch('/api/products', {
+        formSubmitRequest={(values) => {
+          return fetch(`/api/products/${productId}`, {
             method: 'PUT',
-            body: JSON.stringify({ ...values, imgNames, _id: productId }),
+            body: JSON.stringify(values),
+          }).then(() => {
+            return mutate((key) => typeof key === 'string' && key.startsWith(`/api/products`))
           })
         }}
-        initImgNames={imgNames}
       />
     </>
   )

@@ -60,12 +60,12 @@ export interface IDocProduct {
   colors: {
     id: string
     name: string
-    priceAdjust: number
+    priceAdjust?: number
   }[]
   sizes: {
     id: string
     name: string
-    priceAdjust: number
+    priceAdjust?: number
   }[]
   updateTime: Date | string
 }
