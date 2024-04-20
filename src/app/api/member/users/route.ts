@@ -3,33 +3,56 @@ import { authOptions } from '@/utils/auth'
 import clientPromise from '@/utils/database/mongoClient'
 import { getServerSession } from 'next-auth'
 import { NextRequest } from 'next/server'
+import { IDocUser } from '@/types/database'
+import { mdb } from '@/utils/database/collections'
 
-/**
- * WIP
- */
+export interface IGetMemberUsersCondition {
+  page: number
+  pageSize: number
+}
+
+export interface IGetMemberUsersResponse {
+  total: number
+  data: IDocUser[]
+}
+
+const makeGetUsersConditionAndValidate = (search: URLSearchParams): IGetMemberUsersCondition => {
+  const condition = {
+    page: parseInt(search.get('page') ?? '1'),
+    pageSize: parseInt(search.get('pageSize') ?? '1'),
+  }
+  if (condition.page < 1 || condition.pageSize > 30) {
+    throw new Error('Condition is invalid.')
+  }
+  return condition
+}
+
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!accessChecker.hasAdminAccess(session?.user?.role)) {
     return Response.json({ message: accessChecker.message.forbidden }, { status: 403 })
   }
   try {
-    const searchParams = req.nextUrl.searchParams
-    const page = parseInt(searchParams.get('page') ?? '1')
-    if (page < 1) {
-      throw new Error('Page is invalid.')
-    }
+    const condition = makeGetUsersConditionAndValidate(req.nextUrl.searchParams)
 
-    const client = await clientPromise
-    const coll = client.db('kids-apparel').collection('users')
+    const coll = (await clientPromise).db(mdb.dbName).collection<IDocUser>(mdb.coll.users)
 
     const users = await coll
-      .find({}, { sort: { _id: -1 }, limit: 10, skip: 10 * (page - 1) })
+      .find({})
       .project({
         password: 0,
       })
+      .sort({ _id: -1 })
+      .limit(condition.pageSize)
+      .skip(condition.pageSize * (condition.page - 1))
       .toArray()
 
-    return Response.json(users)
+    const total = await coll.countDocuments({})
+
+    return Response.json({
+      total,
+      data: users,
+    } as IGetMemberUsersResponse)
   } catch (err) {
     console.error(err)
     return Response.error()

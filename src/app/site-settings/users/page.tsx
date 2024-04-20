@@ -1,40 +1,55 @@
 'use client'
-import { useUsers } from '@/utils/network'
-import { Spin, Empty, Button } from 'antd'
-import React from 'react'
+import { useUsers } from '@/networks/users'
+import { List } from 'antd'
+import React, { useState } from 'react'
+import { IGetMemberUsersCondition } from '@/app/api/member/users/route'
+import dayjs from 'dayjs'
 
 export default function ({}) {
-  const { data: users, isLoading } = useUsers()
+  const [condition, setCondition] = useState<IGetMemberUsersCondition>({
+    page: 1,
+    pageSize: 10,
+  })
 
-  if (isLoading) {
-    return (
-      <div className="flex h-40 items-center justify-center">
-        <Spin />
-      </div>
-    )
-  }
-
-  if (users?.length === 0) {
-    return (
-      <div className="mt-8">
-        <Empty />
-      </div>
-    )
-  }
+  const { data, isLoading } = useUsers(condition)
 
   return (
-    <div className="mb-16 p-4">
-      {users?.map((v) => {
-        return (
-          <div key={v._id} className="my-6">
-            <div>{v.phoneNumber}</div>
-            <div>{v.userName}</div>
-            <div>{v.createTime}</div>
-            <div>{v.role as any}</div>
-            <Button>Add to manager</Button>
-          </div>
-        )
-      })}
+    <div className="m-4 mb-16">
+      <List
+        itemLayout="horizontal"
+        dataSource={data?.data}
+        loading={isLoading}
+        pagination={{
+          current: condition.page,
+          pageSize: condition.pageSize,
+          onChange: (page, pageSize) => setCondition({ page, pageSize }),
+        }}
+        rowKey={(v) => v._id as string}
+        renderItem={(item, index) => (
+          <List.Item>
+            <List.Item.Meta
+              title={item.userName}
+              description={`phone: ${item.phoneNumber}, email: ${item.email}, role: ${item.role}, create: ${dayjs(item.createTime).add(8, 'h').format('YYYY-MM-DD')}`}
+            />
+          </List.Item>
+        )}
+      />
     </div>
   )
+
+  // return (
+  //   <div className="mb-16 p-4">
+  //     {users?.map((v) => {
+  //       return (
+  //         <div key={v._id} className="my-6">
+  //           <div>{v.phoneNumber}</div>
+  //           <div>{v.userName}</div>
+  //           <div>{v.createTime}</div>
+  //           <div>{v.role as any}</div>
+  //           <Button>Add to manager</Button>
+  //         </div>
+  //       )
+  //     })}
+  //   </div>
+  // )
 }

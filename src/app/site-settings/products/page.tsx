@@ -22,7 +22,7 @@ export default function SiteSettingProductsPage({}: {}) {
         <Button type="primary">新增商品</Button>
       </Link>
 
-      <div className="mt-4">
+      <div className="mb-8 mt-4">
         <SearchForm setCondition={setCondition} />
       </div>
 
