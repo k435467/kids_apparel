@@ -1,12 +1,27 @@
 'use client'
-import ProductCard from '@/components/product/ProductCard'
-import { useHomePageProducts } from '@/utils/network'
-import { Empty, Spin } from 'antd'
+import { useProducts } from '@/networks/products'
+import React, { useState } from 'react'
+import { IGetProductsCondition } from '@/app/api/products/route'
+import { ProductCardList } from '@/components/product/ProductCardList'
 
 export default function Home() {
+  const [condition, setCondition] = useState<IGetProductsCondition>({
+    page: 1,
+    size: 10,
+  })
+
+  const { data, isLoading } = useProducts(condition)
+
   return (
-    <div className="mt-8">
-      <Empty />
+    <div className="m-4">
+      <ProductCardList
+        products={data?.data}
+        loading={isLoading}
+        pagination={{
+          page: condition.page!,
+          pageSize: condition.size!,
+        }}
+      />
     </div>
   )
 }

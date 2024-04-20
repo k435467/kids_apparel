@@ -1,5 +1,4 @@
 'use client'
-import ProductCard from '@/components/product/ProductCard'
 import { useCategoryProducts } from '@/utils/network'
 import { Empty, Spin } from 'antd'
 
