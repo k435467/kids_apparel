@@ -3,18 +3,24 @@ import { FieldType as ProductEditorFieldType } from '@/components/product/Produc
 import { IDocProduct } from '@/types/database'
 import { v4 as uuidv4 } from 'uuid'
 
-export const makeGetProductsCondition = (
+export const makeGetProductsConditionAndValidate = (
   search: URLSearchParams,
 ): Required<Omit<IGetProductsCondition, 'name' | 'startTime' | 'endTime'>> &
-  Pick<IGetProductsCondition, 'name' | 'startTime' | 'endTime'> => ({
-  name: search.get('name') ?? undefined,
-  startTime: search.get('startTime') ?? undefined,
-  endTime: search.get('endTime') ?? undefined,
-  page: parseInt(search.get('page') ?? '1'),
-  size: parseInt(search.get('size') ?? '10'),
-  sort: search.get('sort') ?? '_id',
-  asc: parseInt(search.get('asc') ?? '-1') as 1 | -1,
-})
+  Pick<IGetProductsCondition, 'name' | 'startTime' | 'endTime'> => {
+  const condition = {
+    name: search.get('name') ?? undefined,
+    startTime: search.get('startTime') ?? undefined,
+    endTime: search.get('endTime') ?? undefined,
+    page: parseInt(search.get('page') ?? '1'),
+    size: parseInt(search.get('size') ?? '10'),
+    sort: search.get('sort') ?? '_id',
+    asc: parseInt(search.get('asc') ?? '-1') as 1 | -1,
+  }
+  if (condition.page < 1 || condition.size > 30) {
+    throw new Error('Condition is invalid.')
+  }
+  return condition
+}
 
 export const makeProductPriceMinMax = (
   colors: ProductEditorFieldType['colors'],

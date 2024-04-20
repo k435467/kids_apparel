@@ -9,7 +9,7 @@ import { IDocProduct } from '@/types/database'
 import { FieldType as ProductEditorFieldType } from '@/components/product/ProductEditor'
 import {
   makeColorsOrSizesDbValue,
-  makeGetProductsCondition,
+  makeGetProductsConditionAndValidate,
   makeProductPriceMinMax,
 } from '@/utils/product'
 
@@ -30,11 +30,7 @@ export interface IGetProductsRes {
 
 export async function GET(req: NextRequest) {
   try {
-    const condition = makeGetProductsCondition(req.nextUrl.searchParams)
-
-    if (condition.page < 1 || condition.size > 30) {
-      throw new Error('Filter is invalid.')
-    }
+    const condition = makeGetProductsConditionAndValidate(req.nextUrl.searchParams)
 
     const coll = (await clientPromise).db(mdb.dbName).collection<IDocProduct>(mdb.coll.products)
 

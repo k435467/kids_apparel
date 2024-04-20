@@ -6,7 +6,7 @@ import { authOptions } from '@/utils/auth'
 import { accessChecker } from '@/utils/access'
 import { mdb } from '@/utils/database/collections'
 import { IDocCategory, IDocProduct } from '@/types/database'
-import { makeGetProductsCondition } from '@/utils/product'
+import { makeGetProductsConditionAndValidate } from '@/utils/product'
 
 export interface IGetCategoryProductsResponse {
   total: number
@@ -15,10 +15,7 @@ export interface IGetCategoryProductsResponse {
 
 export async function GET(req: NextRequest, { params }: { params: { categoryId: string } }) {
   try {
-    const condition = makeGetProductsCondition(req.nextUrl.searchParams)
-    if (condition.page < 1 || condition.size > 30) {
-      throw new Error('Filter is invalid.')
-    }
+    const condition = makeGetProductsConditionAndValidate(req.nextUrl.searchParams)
 
     const client = await clientPromise
     const coll = client.db(mdb.dbName).collection<IDocCategory>(mdb.coll.categories)
