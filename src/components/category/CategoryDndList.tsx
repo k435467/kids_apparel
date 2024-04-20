@@ -89,7 +89,7 @@ export const CategoryDndList: React.FC<{ categories: IDocCategory[] }> = ({ cate
       setItems(newItems)
       mutate('/api/categories', patchCategorySorts(newItems), {
         optimisticData: newItems,
-        revalidate: false,
+        revalidate: true,
         populateCache: false,
         throwOnError: false,
       })

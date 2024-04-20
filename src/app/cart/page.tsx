@@ -162,7 +162,9 @@ export default function CartPage({}: {}) {
             fetch('/api/cart', { method: 'PUT', body: JSON.stringify(reqBody) })
               .then(async () => {
                 messageApi.success('成功')
-                await mutate('/api/cart')
+                await mutate('/api/cart', undefined, {
+                  revalidate: true,
+                })
               })
               .catch((err) => {
                 messageApi.error('失敗')

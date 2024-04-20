@@ -17,7 +17,13 @@ export default function ProductsCreatePage() {
             method: 'POST',
             body: JSON.stringify({ ...values }),
           }).then(() => {
-            return mutate((key) => typeof key === 'string' && key.startsWith(`/api/products`))
+            return mutate(
+              (key) => typeof key === 'string' && key.startsWith(`/api/products`),
+              undefined,
+              {
+                revalidate: true,
+              },
+            )
           })
         }}
       />

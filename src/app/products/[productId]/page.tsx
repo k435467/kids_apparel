@@ -66,7 +66,9 @@ export default function ProductDetailPage({ params }: { params: { productId: str
       .then(() => {
         messageApi.success('成功')
         setTimeout(() => {
-          mutate('/api/cart')
+          mutate('/api/cart', undefined, {
+            revalidate: true,
+          })
         }, 1000)
       })
       .catch(() => {

@@ -41,7 +41,13 @@ export default function ProductDetailPage({ params }: { params: { productId: str
             method: 'PUT',
             body: JSON.stringify(values),
           }).then(() => {
-            return mutate((key) => typeof key === 'string' && key.startsWith(`/api/products`))
+            return mutate(
+              (key) => typeof key === 'string' && key.startsWith(`/api/products`),
+              undefined,
+              {
+                revalidate: true,
+              },
+            )
           })
         }}
       />

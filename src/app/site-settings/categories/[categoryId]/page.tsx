@@ -14,6 +14,12 @@ export default function SiteSettingCategoryEditPage({
 }) {
   const { data, isLoading } = useCategory(params.categoryId)
 
+  const mutateAndRevalidateCategories = async () => {
+    await mutate((key) => typeof key === 'string' && key.startsWith(`/api/categories`), undefined, {
+      revalidate: true,
+    })
+  }
+
   const service: ISiteSettingCateogriesEditService = {
     save: (setActionLoading, formValues, messageApi, router) => {
       setActionLoading(true)
@@ -27,8 +33,7 @@ export default function SiteSettingCategoryEditPage({
         } as IDocCategory),
       })
         .then(async () => {
-          await mutate('/api/categories')
-          await mutate(`/api/categories/${params.categoryId}`)
+          await mutateAndRevalidateCategories()
           messageApi.success('成功, 返回列表...')
           setTimeout(() => {
             router.push('/site-settings/categories')
@@ -48,7 +53,7 @@ export default function SiteSettingCategoryEditPage({
         method: 'DELETE',
       })
         .then(async () => {
-          await mutate('/api/categories')
+          await mutateAndRevalidateCategories()
           messageApi.success('成功, 返回列表...')
           setTimeout(() => {
             router.push('/site-settings/categories')
@@ -70,13 +75,9 @@ export default function SiteSettingCategoryEditPage({
           productIds: products.map((x) => x._id),
         }),
       })
-        .then(() => {
+        .then(async () => {
           messageApi.success('成功')
-          mutate(
-            (key) =>
-              typeof key === 'string' &&
-              key.startsWith(`/api/categories/${params.categoryId}/products`),
-          )
+          await mutateAndRevalidateCategories()
         })
         .catch((err) => {
           messageApi.error('失敗')
@@ -92,13 +93,9 @@ export default function SiteSettingCategoryEditPage({
           productIds: products.map((x) => x._id),
         }),
       })
-        .then(() => {
+        .then(async () => {
           messageApi.success('成功')
-          mutate(
-            (key) =>
-              typeof key === 'string' &&
-              key.startsWith(`/api/categories/${params.categoryId}/products`),
-          )
+          await mutateAndRevalidateCategories()
         })
         .catch((err) => {
           messageApi.error('失敗')

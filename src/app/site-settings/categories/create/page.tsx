@@ -22,7 +22,9 @@ export default function SiteSettingCategoryCreatePage({}: {}) {
         } as IDocCategory),
       })
         .then(async () => {
-          await mutate('/api/categories')
+          await mutate('/api/categories', undefined, {
+            revalidate: true,
+          })
           messageApi.success('成功, 返回列表...')
           setTimeout(() => {
             router.push('/site-settings/categories')
