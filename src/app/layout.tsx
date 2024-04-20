@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { getServerSession } from 'next-auth'
 import SessionProvider from '@/components/SessionProvider'
-import StyledComponentsRegistry from '@/components/StyledComponentsRegistry'
+import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { Sidebar } from '@/components/layout/Sidebar'
 import AntdThemeProvider from '@/components/AntdThemeProvider'
 import { Navbar } from '@/components/layout/Navbar'
@@ -19,8 +19,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="tw">
-      <AntdThemeProvider>
-        <StyledComponentsRegistry>
+      <AntdRegistry>
+        <AntdThemeProvider>
           <SessionProvider session={session}>
             <body className="m-auto max-w-3xl">
               <Navbar />
@@ -32,8 +32,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Footer />
             </body>
           </SessionProvider>
-        </StyledComponentsRegistry>
-      </AntdThemeProvider>
+        </AntdThemeProvider>
+      </AntdRegistry>
     </html>
   )
 }
