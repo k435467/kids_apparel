@@ -1,5 +1,5 @@
-import { IPagination } from '@/hooks/usePagination'
-import { defaultProductFilter, IProductFilter } from '@/hooks/useProductFilter'
+import type { IPagination } from '@/hooks/usePagination'
+import type { IProductFilter } from '@/hooks/useProductFilter'
 
 export const makePaginationAndValidate = (search: URLSearchParams): IPagination => {
   const pagination = {
@@ -13,9 +13,9 @@ export const makePaginationAndValidate = (search: URLSearchParams): IPagination 
 }
 
 export const makeProductFilter = (search: URLSearchParams): IProductFilter => ({
-  asc: parseInt(search.get('asc') ?? defaultProductFilter.asc.toString()) as IProductFilter['asc'],
+  asc: parseInt(search.get('asc') ?? '-1') as IProductFilter['asc'],
   endTime: search.get('endTime') ?? undefined,
   name: search.get('name') ?? undefined,
-  sort: search.get('sort') ?? defaultProductFilter.sort,
+  sort: search.get('sort') ?? '_id',
   startTime: search.get('startTime') ?? undefined,
 })
