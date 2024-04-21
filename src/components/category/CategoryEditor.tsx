@@ -7,27 +7,28 @@ import { useRouter } from 'next/navigation'
 import { MessageInstance } from 'antd/es/message/interface'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useCategoryProducts } from '@/networks/categories'
-import { IGetProductsCondition } from '@/app/api/products/route'
-import { formatDayjsToUTCDayEnd, formatDayjsToUTCDayStart } from '@/utils/format'
-import { SearchForm } from '@/components/product/ProductSearchForm'
+import { ProductFilterForm } from '@/components/product/ProductFilterForm'
 import { ProductList } from '@/components/product/ProductList'
+import { useProductFilter } from '@/hooks/useProductFilter'
+import { usePagination } from '@/hooks/usePagination'
 
 const ProductSection: React.FC<{
   addProducts: (v: IDocProduct[]) => Promise<any>
   removeProducts: (v: IDocProduct[]) => Promise<any>
   categoryId: string
 }> = ({ addProducts, removeProducts, categoryId }) => {
+  // Modal opens
   const [openProductSelection, setOpenProductSelection] = useState<boolean>(false)
-  const [openCondition, setOpenCondition] = useState<boolean>(false)
-  const [condition, setCondition] = useState<IGetProductsCondition>({
-    page: 1,
-    size: 10,
-  })
-  const { data, isLoading } = useCategoryProducts(categoryId, condition)
+  const [openFilter, setOpenFilter] = useState<boolean>(false)
+
+  // Data
+  const { pagination, paginationProps, resetPagination } = usePagination()
+  const { productFilter, setProductFilter } = useProductFilter()
+  const { data, isLoading } = useCategoryProducts(categoryId, pagination, productFilter)
+
+  // Others
   const [selectedProducts, setSelectedProducts] = useState<IDocProduct[]>([])
   const [actionLoading, setActionLoading] = useState<boolean>(false)
-
-  const resetPaginationCondition = () => setCondition((v) => ({ ...v, page: 1, size: 10 }))
 
   return (
     <div className="mt-8">
@@ -36,7 +37,7 @@ const ProductSection: React.FC<{
           選擇商品
         </Button>
         <div className="flex gap-4">
-          <Button onClick={() => setOpenCondition(true)}>篩選</Button>
+          <Button onClick={() => setOpenFilter(true)}>篩選</Button>
           <Button
             danger
             loading={actionLoading}
@@ -44,7 +45,7 @@ const ProductSection: React.FC<{
               setActionLoading(true)
               await removeProducts(selectedProducts)
               setSelectedProducts([])
-              resetPaginationCondition()
+              resetPagination()
               setActionLoading(false)
             }}
           >
@@ -53,18 +54,18 @@ const ProductSection: React.FC<{
         </div>
       </div>
 
-      {/* Condition Modal */}
+      {/* Filter Modal */}
       <Modal
-        open={openCondition}
+        open={openFilter}
         footer={null}
         onCancel={() => {
-          setOpenCondition(false)
+          setOpenFilter(false)
         }}
       >
-        <SearchForm
-          setCondition={setCondition}
+        <ProductFilterForm
+          setProductFilter={setProductFilter}
           onFinish={(v) => {
-            setOpenCondition(false)
+            setOpenFilter(false)
           }}
         />
       </Modal>
@@ -73,7 +74,7 @@ const ProductSection: React.FC<{
         open={openProductSelection}
         onCancel={() => setOpenProductSelection(false)}
         onFinish={(v) => {
-          resetPaginationCondition()
+          resetPagination()
           return addProducts(v)
         }}
       />
@@ -82,16 +83,8 @@ const ProductSection: React.FC<{
         dataSource={data?.data}
         loading={isLoading}
         pagination={{
+          ...paginationProps,
           total: data?.total,
-          current: condition.page,
-          pageSize: condition.size,
-          onChange: (page, pageSize) => {
-            setCondition((v) => ({
-              ...v,
-              page: pageSize == v.size ? page : 1,
-              size: pageSize,
-            }))
-          },
         }}
         selectedProducts={selectedProducts}
         onClickProduct={(v) => {

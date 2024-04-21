@@ -18,10 +18,7 @@ export const ProductList: React.FC<{
       itemLayout="horizontal"
       dataSource={dataSource}
       loading={loading}
-      pagination={{
-        ...pagination,
-        pageSizeOptions: [5, 10, 20, 30],
-      }}
+      pagination={pagination}
       rowKey={(v) => v._id as string}
       renderItem={(item, index) => {
         const isSelected = Boolean(selectedProducts?.find((v) => v._id === item._id))

@@ -6,7 +6,7 @@ import { authOptions } from '@/utils/auth'
 import { accessChecker } from '@/utils/access'
 import { mdb } from '@/utils/database/collections'
 import { IDocCategory, IDocProduct } from '@/types/database'
-import { makeGetProductsConditionAndValidate } from '@/utils/product'
+import { makePaginationAndValidate, makeProductFilter } from '@/utils/searchParams'
 
 export interface IGetCategoryProductsResponse {
   total: number
@@ -15,10 +15,8 @@ export interface IGetCategoryProductsResponse {
 
 export async function GET(req: NextRequest, { params }: { params: { categoryId: string } }) {
   try {
-    const condition = makeGetProductsConditionAndValidate(req.nextUrl.searchParams)
-
-    const client = await clientPromise
-    const coll = client.db(mdb.dbName).collection<IDocCategory>(mdb.coll.categories)
+    const productFilter = makeProductFilter(req.nextUrl.searchParams)
+    const pagination = makePaginationAndValidate(req.nextUrl.searchParams)
 
     const pipelines = [
       {
@@ -51,19 +49,19 @@ export async function GET(req: NextRequest, { params }: { params: { categoryId: 
         },
       },
       // Here got product documents
-      ...(condition.name || condition.startTime || condition.endTime
+      ...(productFilter.name || productFilter.startTime || productFilter.endTime
         ? [
             {
               $match: {
-                ...(condition.name && {
+                ...(productFilter.name && {
                   name: {
-                    $regex: new RegExp(condition.name),
+                    $regex: new RegExp(productFilter.name),
                   },
                 }),
-                ...((condition.startTime || condition.endTime) && {
+                ...((productFilter.startTime || productFilter.endTime) && {
                   createTime: {
-                    ...(condition.startTime && { $gte: new Date(condition.startTime) }),
-                    ...(condition.endTime && { $lte: new Date(condition.endTime) }),
+                    ...(productFilter.startTime && { $gte: new Date(productFilter.startTime) }),
+                    ...(productFilter.endTime && { $lte: new Date(productFilter.endTime) }),
                   },
                 }),
               },
@@ -71,6 +69,8 @@ export async function GET(req: NextRequest, { params }: { params: { categoryId: 
           ]
         : []),
     ]
+
+    const coll = (await clientPromise).db(mdb.dbName).collection<IDocCategory>(mdb.coll.categories)
 
     const totalAggregateResult = (await coll
       .aggregate([
@@ -86,14 +86,14 @@ export async function GET(req: NextRequest, { params }: { params: { categoryId: 
         ...pipelines,
         {
           $sort: {
-            [condition.sort]: condition.asc,
+            [productFilter.sort]: productFilter.asc,
           },
         },
         {
-          $limit: condition.size,
+          $limit: pagination.pageSize,
         },
         {
-          $skip: condition.size * (condition.page - 1),
+          $skip: pagination.pageSize * (pagination.current - 1),
         },
       ])
       .toArray()

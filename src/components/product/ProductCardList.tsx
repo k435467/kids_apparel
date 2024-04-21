@@ -1,14 +1,11 @@
 import React from 'react'
 import { IDocProduct } from '@/types/database'
 import { ProductCard } from '@/components/product/ProductCard'
-import { Empty, Pagination, Spin } from 'antd'
+import { Empty, Pagination, PaginationProps, Spin } from 'antd'
 
 export const ProductCardList: React.FC<{
   products?: IDocProduct[]
-  pagination: {
-    page: number
-    pageSize: number
-  }
+  pagination: PaginationProps
   loading: boolean
 }> = ({ products, pagination, loading }) => {
   if (loading) {
@@ -33,7 +30,7 @@ export const ProductCardList: React.FC<{
         ))}
       </div>
       <div className="mt-8 flex justify-center">
-        <Pagination current={pagination.page} pageSize={pagination.pageSize} />
+        <Pagination {...pagination} />
       </div>
     </div>
   )

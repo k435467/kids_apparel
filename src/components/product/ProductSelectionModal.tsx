@@ -2,22 +2,21 @@
 import React, { useState } from 'react'
 import { Modal } from 'antd'
 import { useProducts } from '@/networks/products'
-import { IGetProductsCondition } from '@/app/api/products/route'
-import { formatDayjsToUTCDayEnd, formatDayjsToUTCDayStart } from '@/utils/format'
 import { IDocProduct } from '@/types/database'
-import { SearchForm } from '@/components/product/ProductSearchForm'
+import { ProductFilterForm } from '@/components/product/ProductFilterForm'
 import { ProductList } from '@/components/product/ProductList'
+import { usePagination } from '@/hooks/usePagination'
+import { useProductFilter } from '@/hooks/useProductFilter'
 
 export const ProductSelectionModal: React.FC<{
   open: boolean
   onCancel: () => void
   onFinish: (v: IDocProduct[]) => Promise<any>
 }> = ({ open, onCancel, onFinish }) => {
-  const [condition, setCondition] = useState<IGetProductsCondition>({
-    page: 1,
-    size: 10,
-  })
-  const { data, isLoading } = useProducts(condition)
+  const { pagination, paginationProps } = usePagination()
+  const { productFilter, setProductFilter } = useProductFilter()
+  const { data, isLoading } = useProducts(pagination, productFilter)
+
   const [selectedProducts, setSelectedProducts] = useState<IDocProduct[]>([])
   const [actionLoading, setActionLoading] = useState<boolean>(false)
 
@@ -38,21 +37,13 @@ export const ProductSelectionModal: React.FC<{
         setSelectedProducts([])
       }}
     >
-      <SearchForm setCondition={setCondition} />
+      <ProductFilterForm setProductFilter={setProductFilter} />
       <ProductList
         dataSource={data?.data}
         loading={isLoading}
         pagination={{
+          ...paginationProps,
           total: data?.total,
-          current: condition.page,
-          pageSize: condition.size,
-          onChange: (page, pageSize) => {
-            setCondition((v) => ({
-              ...v,
-              page: pageSize == v.size ? page : 1,
-              size: pageSize,
-            }))
-          },
         }}
         selectedProducts={selectedProducts}
         onClickProduct={(v) => {

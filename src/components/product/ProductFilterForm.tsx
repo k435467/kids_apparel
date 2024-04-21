@@ -2,15 +2,15 @@
 import React from 'react'
 import { Button, DatePicker, Form, Input, ConfigProvider, Select } from 'antd'
 import { Dayjs } from 'dayjs'
-import { IGetProductsCondition } from '@/app/api/products/route'
 import { formatDayjsToUTCDayEnd, formatDayjsToUTCDayStart } from '@/utils/format'
+import { defaultProductFilter, IProductFilter } from '@/hooks/useProductFilter'
 
 type FieldType = {
-  title?: string
+  name?: string
   startTime?: Dayjs
   endTime?: Dayjs
-  sort?: string
-  asc?: 1 | -1
+  sort: string
+  asc: 1 | -1
 }
 
 const sortSelectOptions = [
@@ -44,13 +44,13 @@ const ascSelectOptions = [
 ]
 
 /**
- * @param setCondition Called in Form.onFinish.
- * @param onFinish Additional callback to run.
+ * @param setProductFilter Called in Form.onFinish.
+ * @param onFinish Additional callback to run in Form.onFinish.
  */
-export const SearchForm: React.FC<{
-  setCondition: React.Dispatch<React.SetStateAction<IGetProductsCondition>>
+export const ProductFilterForm: React.FC<{
+  setProductFilter: React.Dispatch<React.SetStateAction<IProductFilter>>
   onFinish?: (values: FieldType) => void
-}> = ({ setCondition, onFinish }) => {
+}> = ({ setProductFilter, onFinish }) => {
   return (
     <ConfigProvider
       theme={{
@@ -64,21 +64,16 @@ export const SearchForm: React.FC<{
       <Form
         size="small"
         onFinish={(v) => {
-          setCondition((oldValues) => ({
-            ...oldValues,
+          setProductFilter({
             ...v,
-            name: v.title && v.title.length > 0 ? v.title : undefined,
             startTime: formatDayjsToUTCDayStart(v.startTime),
             endTime: formatDayjsToUTCDayEnd(v.endTime),
-          }))
+          })
           onFinish?.(v)
         }}
-        initialValues={{
-          sort: '_id',
-          asc: -1,
-        }}
+        initialValues={defaultProductFilter}
       >
-        <Form.Item<FieldType> label="名稱" name="title">
+        <Form.Item<FieldType> label="名稱" name="name">
           <Input />
         </Form.Item>
         <Form.Item<FieldType> label="建立時間">

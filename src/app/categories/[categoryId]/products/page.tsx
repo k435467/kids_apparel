@@ -1,5 +1,4 @@
 'use client'
-import { useCategoryProducts } from '@/utils/network'
 import { Empty, Spin } from 'antd'
 
 export default function CategoryProducts({ params }: { params: { categoryId: string } }) {

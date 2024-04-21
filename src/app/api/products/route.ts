@@ -7,21 +7,8 @@ import { Filter } from 'mongodb'
 import { mdb } from '@/utils/database/collections'
 import { IDocProduct } from '@/types/database'
 import { FieldType as ProductEditorFieldType } from '@/components/product/ProductEditor'
-import {
-  makeColorsOrSizesDbValue,
-  makeGetProductsConditionAndValidate,
-  makeProductPriceMinMax,
-} from '@/utils/product'
-
-export interface IGetProductsCondition {
-  name?: string
-  startTime?: string
-  endTime?: string
-  page?: number
-  size?: number
-  sort?: string
-  asc?: 1 | -1
-}
+import { makeColorsOrSizesDbValue, makeProductPriceMinMax } from '@/utils/product'
+import { makePaginationAndValidate, makeProductFilter } from '@/utils/searchParams'
 
 export interface IGetProductsRes {
   total: number
@@ -30,29 +17,30 @@ export interface IGetProductsRes {
 
 export async function GET(req: NextRequest) {
   try {
-    const condition = makeGetProductsConditionAndValidate(req.nextUrl.searchParams)
-
-    const coll = (await clientPromise).db(mdb.dbName).collection<IDocProduct>(mdb.coll.products)
+    const productFilter = makeProductFilter(req.nextUrl.searchParams)
+    const pagination = makePaginationAndValidate(req.nextUrl.searchParams)
 
     const filter: Filter<IDocProduct> = {
-      ...(condition.name && {
+      ...(productFilter.name && {
         name: {
-          $regex: new RegExp(condition.name, 'i'),
+          $regex: new RegExp(productFilter.name, 'i'),
         },
       }),
-      ...((condition.startTime || condition.endTime) && {
+      ...((productFilter.startTime || productFilter.endTime) && {
         createTime: {
-          ...(condition.startTime && { $gte: new Date(condition.startTime) }),
-          ...(condition.endTime && { $lte: new Date(condition.endTime) }),
+          ...(productFilter.startTime && { $gte: new Date(productFilter.startTime) }),
+          ...(productFilter.endTime && { $lte: new Date(productFilter.endTime) }),
         },
       }),
     }
 
+    const coll = (await clientPromise).db(mdb.dbName).collection<IDocProduct>(mdb.coll.products)
+
     const products = await coll
       .find(filter)
-      .sort({ [condition.sort]: condition.asc })
-      .limit(condition.size)
-      .skip(condition.size * (condition.page - 1))
+      .sort({ [productFilter.sort]: productFilter.asc })
+      .limit(pagination.pageSize)
+      .skip(pagination.pageSize * (pagination.current - 1))
       .toArray()
 
     const total = await coll.countDocuments(filter)
